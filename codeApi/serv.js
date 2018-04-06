@@ -42,7 +42,7 @@ myRouter.route('/temp/:date')
 .put(function(req, res){
     res.json({message: "Date que vous voulez modifié : " + req.params.date});
 })
-.delete(funciton(req, res){
+.delete(function(req, res){
     res.json({message: "Date a supprimer : " + req.params.date});
 });
 //endregion
