@@ -27,6 +27,7 @@ myRouter.route('/temp')
 })
 
 .post(function(req,res){
+    console.log(req.query);
     var c = function(data){
         res.json({message: data});
     };
