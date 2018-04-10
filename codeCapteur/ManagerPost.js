@@ -25,7 +25,7 @@ class Manager{
     //Pour le code ascii d'un caractére : String.fromCharCode(data[i]).charCodeAt(0);
 
     tryJoin(){
-        request.get('http://localhost:3000').on('response', function(response){ if(response.statusCode == 200) console.log("Api joignable."); else console.log("Api error"); }).on('error', function(err){ console.log("Api error") })
+        request.get('http://localhost/api').on('response', function(response){ if(response.statusCode == 200) console.log("Api joignable."); else console.log("Api error"); }).on('error', function(err){ console.log("Api error") })
     }
 
     addData(data){
@@ -46,10 +46,10 @@ class Manager{
 
     send(){
         var options = {
-            uri: 'http://localhost:3000/temp?temp='+this.getdata,
+            uri: 'http://localhost/api/temp?temp='+this.getdata,
             method: 'POST'
         };
-
+        console.log("Try sending temp");
         request(options, function(error, response, body) {
             if(!error && response.statusCode == 200){
                 console.log("temp sended.");

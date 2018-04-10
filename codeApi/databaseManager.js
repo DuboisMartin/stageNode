@@ -17,11 +17,19 @@ class databaseManager{
         });
     }
 
-    recup(id){
-        var req = "SELECT * FROM t1 WHERE id = "+id;
+    recupSome(callback, idD, idF){
+        var req = "SELECT * FROM t1 WHERE id BETWEEN '"+idD+"' and '"+idF+"';";
         this.con.query(req, function(err, result){
             if(err) return err;
-            else return result;
+            else callback(result);
+        });
+    }
+
+    recup(callback, id){
+        var req = "SELECT * FROM t1 WHERE id = "+id;
+        this.con.query(req, function(err, result){
+            if(err) throw err;
+            else callback(result[0].texte, id);
         });
     }
 

@@ -2,7 +2,7 @@ var express = require('express');
 var db = require("./databaseManager");
 
 var hostname = 'localhost'; 
-var port = 3000; 
+var port = 80; 
 
 var dbManager = new db();
 
@@ -13,14 +13,17 @@ var intervalID = setInterval(function(){console.log("Nombre de requêtes reçu :
 
 var myRouter = express.Router(); 
 
-myRouter.route('/')
-//region Description de cette route
-.all(function(req, res){
-    res.json({message: "Bienvenue sur l'API de notre station météo.", method: req.method});
-});
+//region Description de la route statique
+myRouter.route('/').get(function(req, res){ res.sendFile(__dirname+'/static/index.html');});
+myRouter.route('/favicon.png').get(function(req, res){ res.sendFile(__dirname+'/static/favicon.png');});
+myRouter.route('/style.css').get(function(req, res){ res.sendFile(__dirname+'/static/style.css');});
+myRouter.route('/script.js').get(function(req, res){ res.sendFile(__dirname+'/static/script.js');});
+myRouter.route('/c.html').get(function(req, res){ res.sendFile(__dirname+'/static/contenuHome.html');console.log("YEP");});
 //endregion
 
-myRouter.route('/temp')
+myRouter.route('/api').get(function(req, res){ reqNumber ++; res.json({data : "Hello world!"}); });
+
+myRouter.route('/api/temp')
 //region Description de cette route
 .get(function(req,res){ 
     reqNumber++;
@@ -49,16 +52,21 @@ myRouter.route('/temp')
 }); 
 //endregion
 
-myRouter.route('/temp/:id-:idd')
+myRouter.route('/api/temp/:id-:idd')
 //region Description de cette route
 .get(function(req, res){
+    let json = [{}]; 
+    var c = function(data){
+        res.json(data);
+    };
     reqNumber++;
-    res.json({data: "Vous avez demandé de " + req.params.id + " a " + req.params.idd});
+    if(typeof parseInt(req.params.id) != "number" || typeof parseInt(req.params.idd) != "number"){
+        res.json({data: "Error"});
+    }else{
+        dbManager.recupSome(c, parseInt(req.params.id), parseInt(req.params.idd));
+    }
 })
-.put(function(req, res){
-    reqNumber++;
-    res.json({message: "Temp a modifié : " + req.params.id});
-})
+
 .delete(function(req, res){
     reqNumber++;
     res.json({message: "Temp a supprimé : " + req.params.id});
