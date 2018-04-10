@@ -25,7 +25,7 @@ class databaseManager{
         });
     }
 
-    recupLast(callback){
+    recupLast(callback, id = false){
         var req = "SELECT * FROM t1 ORDER BY id DESC LIMIT 1;";
         var res;
         this.con.query(req, function(err, result){
@@ -33,7 +33,8 @@ class databaseManager{
                 throw err;
             }
             else{
-                callback(result[0].texte);
+                if(id) callback(result[0].id);
+                else callback(result[0].texte);
             }
         });
     }

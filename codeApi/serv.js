@@ -8,6 +8,9 @@ var dbManager = new db();
 
 var app = express(); 
 
+var reqNumber = 0;
+var intervalID = setInterval(function(){console.log("Nombre de requêtes reçu : " + reqNumber);}, 60000);
+
 var myRouter = express.Router(); 
 
 myRouter.route('/')
@@ -20,14 +23,15 @@ myRouter.route('/')
 myRouter.route('/temp')
 //region Description de cette route
 .get(function(req,res){ 
+    reqNumber++;
     var c = function(data){
-	    res.json({message : data});
+	    res.json({data : data});
     };
     let data = dbManager.recupLast(c);
 })
 
 .post(function(req,res){
-    console.log(req.query);
+    reqNumber++;
     var c = function(data){
         res.json({message: data});
     };
@@ -35,23 +39,28 @@ myRouter.route('/temp')
 })
 
 .put(function(req,res){ 
-    res.json({message : "Modifié temp.", methode : req.method});
+    reqNumber++;
+    res.json({data : "Modifié temp.", methode : req.method});
 })
 
 .delete(function(req,res){ 
-res.json({message : "Supprimé temp.", methode : req.method});  
+    reqNumber++;
+    res.json({data : "Supprimé temp.", methode : req.method});  
 }); 
 //endregion
 
-myRouter.route('/temp/:id')
+myRouter.route('/temp/:id-:idd')
 //region Description de cette route
 .get(function(req, res){
-    res.json({message: "Temp demandée : "+ req.params.id});
+    reqNumber++;
+    res.json({data: "Vous avez demandé de " + req.params.id + " a " + req.params.idd});
 })
 .put(function(req, res){
+    reqNumber++;
     res.json({message: "Temp a modifié : " + req.params.id});
 })
 .delete(function(req, res){
+    reqNumber++;
     res.json({message: "Temp a supprimé : " + req.params.id});
 });
 //endregion

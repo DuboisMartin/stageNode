@@ -1,4 +1,4 @@
-const Manager = require('./Manager.js');
+const Manager = require('./ManagerPost.js');
 
 var serialport = require("serialport");
 var SerialPort = serialport.SerialPort;
