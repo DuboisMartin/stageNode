@@ -5,6 +5,8 @@ var hostname = 'localhost';
 var port = 80; 
 
 var dbManager = new db();
+var moment_timezone = require('moment-timezone');
+var moment = require('moment');
 
 var app = express(); 
 
@@ -18,12 +20,14 @@ myRouter.route('/').get(function(req, res){ res.sendFile(__dirname+'/static/inde
 myRouter.route('/favicon.png').get(function(req, res){ res.sendFile(__dirname+'/static/favicon.png');});
 myRouter.route('/style.css').get(function(req, res){ res.sendFile(__dirname+'/static/style.css');});
 myRouter.route('/script.js').get(function(req, res){ res.sendFile(__dirname+'/static/script.js');});
-myRouter.route('/c.html').get(function(req, res){ res.sendFile(__dirname+'/static/contenuHome.html');console.log("YEP");});
+myRouter.route('/c.html').get(function(req, res){ res.sendFile(__dirname+'/static/contenuHome.html')});
+myRouter.route('/temp.html').get(function(req, res){ res.sendFile(__dirname+'/static/contenuTemp.html')});
+myRouter.route('/temp.js').get(function(req, res) { res.sendFile(__dirname+'/static/temp.js')});
 //endregion
 
 myRouter.route('/api').get(function(req, res){ reqNumber ++; res.json({data : "Hello world!"}); });
 
-myRouter.route('/api/temp')
+myRouter.route('/api/temp/last')
 //region Description de cette route
 .get(function(req,res){ 
     reqNumber++;
@@ -52,7 +56,7 @@ myRouter.route('/api/temp')
 }); 
 //endregion
 
-myRouter.route('/api/temp/:id-:idd')
+myRouter.route('/api/temp/:idD-:idF')
 //region Description de cette route
 .get(function(req, res){
     let json = [{}]; 
@@ -60,10 +64,10 @@ myRouter.route('/api/temp/:id-:idd')
         res.json(data);
     };
     reqNumber++;
-    if(typeof parseInt(req.params.id) != "number" || typeof parseInt(req.params.idd) != "number"){
+    if(typeof parseInt(req.params.idD) != "number" || typeof parseInt(req.params.idF) != "number"){
         res.json({data: "Error"});
     }else{
-        dbManager.recupSome(c, parseInt(req.params.id), parseInt(req.params.idd));
+        dbManager.recupSome(c, parseInt(req.params.idD), parseInt(req.params.idF));
     }
 })
 
@@ -73,6 +77,34 @@ myRouter.route('/api/temp/:id-:idd')
 });
 //endregion
 
+myRouter.route('/api/temp/tail/:number')
+
+.get(function(req, res){
+    var c = function(data){
+        res.json(data);
+    };
+    reqNumber++;
+    if(typeof parseInt(req.params.number) != "number"){
+        res.json({data: "Error"});
+    }else{
+        dbManager.recupLast(c, parseInt(req.params.number))
+    }
+});
+
+myRouter.route('/api/temp/from/:number-:e')
+.get(function(req, res){
+    var c = function(data){
+        res.json(data);
+    };
+    reqNumber++;
+    if( typeof parseInt(req.params.number) != "number" || !(req.params.e in {hour: '', day: '', month: ''}) ){
+        res.json({data: "error"});
+    }else{
+        //On doit faire une requête entre maintenant (var now)
+        res.json({data : "SELECT * FROM t1 WHERE date BETWEEN '"+moment_timezone().tz("Europe/Paris").format("YYYY-MM-DD HH:mm:ss")+"' AND '"+moment_timezone().tz("Europe/Paris").subtract(parseInt(req.params.number), req.params.e).format("YYYY-MM-DD HH:mm:ss")+"';"});
+    }
+
+});
 
 
 app.use(myRouter);  

@@ -10,7 +10,7 @@ class databaseManager{
     }
 
     save(data, callback){
-        var req = "INSERT INTO t1 VALUES(0, \'"+data+"\');";
+        var req = "INSERT INTO t1 VALUES(0, \'"+data+"\', CURRENT_TIMESTAMP);";
         this.con.query(req, function(err, result){
             if(err) return err;
             else callback(result);
@@ -18,7 +18,7 @@ class databaseManager{
     }
 
     recupSome(callback, idD, idF){
-        var req = "SELECT * FROM t1 WHERE id BETWEEN '"+idD+"' and '"+idF+"';";
+        var req = "SELECT id, texte FROM t1 WHERE id BETWEEN '"+idD+"' and '"+idF+"';";
         this.con.query(req, function(err, result){
             if(err) return err;
             else callback(result);
@@ -26,23 +26,21 @@ class databaseManager{
     }
 
     recup(callback, id){
-        var req = "SELECT * FROM t1 WHERE id = "+id;
+        var req = "SELECT id, texte FROM t1 WHERE id = "+id;
         this.con.query(req, function(err, result){
             if(err) throw err;
             else callback(result[0].texte, id);
         });
     }
 
-    recupLast(callback, id = false){
-        var req = "SELECT * FROM t1 ORDER BY id DESC LIMIT 1;";
-        var res;
+    recupLast(callback ,number = 1){
+        var req = "SELECT id, texte FROM t1 ORDER BY id DESC LIMIT "+number+";";
         this.con.query(req, function(err, result){
             if(err){
                 throw err;
             }
             else{
-                if(id) callback(result[0].id);
-                else callback(result[0].texte);
+                callback(result);
             }
         });
     }
