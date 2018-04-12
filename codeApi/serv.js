@@ -65,10 +65,10 @@ myRouter.route('/api/temp/:idD-:idF')
         res.json(data);
     };
     reqNumber++;
-    if(typeof parseInt(req.params.idD) != "number" || typeof parseInt(req.params.idF) != "number"){
+    if( isNaN(Number(req.params.number)) || typeof Number(req.params.idF) != "number"){
         res.json({data: "Error"});
     }else{
-        dbManager.recupSome(c, parseInt(req.params.idD), parseInt(req.params.idF));
+        dbManager.recupSome(c, Number(req.params.idD), Number(req.params.idF));
     }
 })
 
@@ -85,10 +85,10 @@ myRouter.route('/api/temp/tail/:number')
         res.json(data);
     };
     reqNumber++;
-    if(typeof parseInt(req.params.number) != "number"){
-        res.json({data: "Error"});
+    if( isNaN(Number(req.params.number)) ){
+        res.json({data: "Error in params sended."});
     }else{
-        dbManager.recupLast(c, parseInt(req.params.number))
+        dbManager.recupLast(c, Number(req.params.number))
     }
 });
 
@@ -98,16 +98,80 @@ myRouter.route('/api/temp/from/:number-:e')
         res.json(data);
     };
     reqNumber++;
-    if( typeof parseInt(req.params.number) != "number" || !(req.params.e in {hour: '', day: '', month: ''}) ){
+    if( isNaN(Number(req.params.number)) || !(req.params.e in {sec: '', min: '', hour: '', day: '', month: '', year: ''}) ){
         res.json({data: "error"});
     }else{
-        //On doit faire une requête entre maintenant (var now)
-        //res.json({data : "SELECT * FROM t1 WHERE date BETWEEN '"+moment_timezone().tz("Europe/Paris").format("YYYY-MM-DD HH:mm:ss")+"' AND '"+moment_timezone().tz("Europe/Paris").subtract(parseInt(req.params.number), req.params.e).format("YYYY-MM-DD HH:mm:ss")+"';"});
-        dbManager.justExec(c, "SELECT id, texte FROM t1 WHERE date BETWEEN '"+moment_timezone().tz("Europe/Paris").subtract(parseInt(req.params.number), req.params.e).format("YYYY-MM-DD HH:mm:ss")+"' AND '"+moment_timezone().tz("Europe/Paris").format("YYYY-MM-DD HH:mm:ss")+"';");
+        dbManager.justExec(c, "SELECT id, texte FROM t1 WHERE date BETWEEN '"+moment_timezone().tz("Europe/Paris").subtract(Number(req.params.number), req.params.e).format("YYYY-MM-DD HH:mm:ss")+"' AND '"+moment_timezone().tz("Europe/Paris").format("YYYY-MM-DD HH:mm:ss")+"';");
     }
 
 });
 
+myRouter.route('/api/temp/average/:number-:e')
+.get(function(req, res){
+    var c = function(data){
+        if(data.length == 0){
+            res.json({data: '0', error: "No records"});
+        }else{
+            var moyenne = 0;
+            for(var i = 0; i < data.length; i++){
+                moyenne += Number(data[i].texte);
+            }
+            moyenne = moyenne/data.length;
+            res.json({data: moyenne});
+        }
+    };
+    reqNumber++;
+    if( isNaN(Number(req.params.number)) || !(req.params.e in {sec: '', min: '', hour: '', day: '', month: '', year: ''}) ){
+        res.json({data: "error"});
+    }else{
+        dbManager.justExec(c, "SELECT id, texte FROM t1 WHERE date BETWEEN '"+moment_timezone().tz("Europe/Paris").subtract(Number(req.params.number), req.params.e).format("YYYY-MM-DD HH:mm:ss")+"' AND '"+moment_timezone().tz("Europe/Paris").format("YYYY-MM-DD HH:mm:ss")+"';");
+    }
+
+});
+
+myRouter.route('/api/temp/min/:number-:e')
+.get(function(req, res){
+    var c = function(data){
+        if(data.length == 0){
+            res.json({data: '0', error: "No records"});
+        }else{
+            var min = Number(data[0].texte);
+            for(var i = 1; i < data.length; i++){
+                if(Number(data[i].texte) < min) min = Number(data[i].texte);
+            }
+            res.json({data: min});
+        }
+    };
+    reqNumber++;
+    if( isNaN(Number(req.params.number)) || typeof Number(req.params.number) != "number" || !(req.params.e in {sec: '', min: '', hour: '', day: '', month: '', year: ''}) ){
+        res.json({data: '0', error: "Error in params sended."});
+    }else{
+        dbManager.justExec(c, "SELECT id, texte FROM t1 WHERE date BETWEEN '"+moment_timezone().tz("Europe/Paris").subtract(Number(req.params.number), req.params.e).format("YYYY-MM-DD HH:mm:ss")+"' AND '"+moment_timezone().tz("Europe/Paris").format("YYYY-MM-DD HH:mm:ss")+"';");
+    }
+
+});
+
+myRouter.route('/api/temp/max/:number-:e')
+.get(function(req, res){
+    var c = function(data){
+        if(data.length == 0){
+            res.json({data: '0', error: "No records"});
+        }else{
+            var max = Number(data[0].texte);
+            for(var i = 1; i < data.length; i++){
+                if(Number(data[i].texte) > max) max = Number(data[i].texte);
+            }
+            res.json({data: max});
+        }
+    };
+    reqNumber++;
+    if( isNaN(Number(req.params.number)) || !(req.params.e in {sec: '', min: '', hour: '', day: '', month: '', year: ''}) ){
+        res.json({data: '0', error: "Error in params sended."});
+    }else{
+        dbManager.justExec(c, "SELECT id, texte FROM t1 WHERE date BETWEEN '"+moment_timezone().tz("Europe/Paris").subtract(Number(req.params.number), req.params.e).format("YYYY-MM-DD HH:mm:ss")+"' AND '"+moment_timezone().tz("Europe/Paris").format("YYYY-MM-DD HH:mm:ss")+"';");
+    }
+
+});
 
 app.use(myRouter);  
 
