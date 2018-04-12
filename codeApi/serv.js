@@ -23,6 +23,7 @@ myRouter.route('/script.js').get(function(req, res){ res.sendFile(__dirname+'/st
 myRouter.route('/c.html').get(function(req, res){ res.sendFile(__dirname+'/static/contenuHome.html')});
 myRouter.route('/temp.html').get(function(req, res){ res.sendFile(__dirname+'/static/contenuTemp.html')});
 myRouter.route('/temp.js').get(function(req, res) { res.sendFile(__dirname+'/static/temp.js')});
+myRouter.route('/home.js').get(function(req, res){ res.sendFile(__dirname+'/static/home.js')});
 //endregion
 
 myRouter.route('/api').get(function(req, res){ reqNumber ++; res.json({data : "Hello world!"}); });
@@ -101,7 +102,8 @@ myRouter.route('/api/temp/from/:number-:e')
         res.json({data: "error"});
     }else{
         //On doit faire une requête entre maintenant (var now)
-        res.json({data : "SELECT * FROM t1 WHERE date BETWEEN '"+moment_timezone().tz("Europe/Paris").format("YYYY-MM-DD HH:mm:ss")+"' AND '"+moment_timezone().tz("Europe/Paris").subtract(parseInt(req.params.number), req.params.e).format("YYYY-MM-DD HH:mm:ss")+"';"});
+        //res.json({data : "SELECT * FROM t1 WHERE date BETWEEN '"+moment_timezone().tz("Europe/Paris").format("YYYY-MM-DD HH:mm:ss")+"' AND '"+moment_timezone().tz("Europe/Paris").subtract(parseInt(req.params.number), req.params.e).format("YYYY-MM-DD HH:mm:ss")+"';"});
+        dbManager.justExec(c, "SELECT id, texte FROM t1 WHERE date BETWEEN '"+moment_timezone().tz("Europe/Paris").subtract(parseInt(req.params.number), req.params.e).format("YYYY-MM-DD HH:mm:ss")+"' AND '"+moment_timezone().tz("Europe/Paris").format("YYYY-MM-DD HH:mm:ss")+"';");
     }
 
 });
