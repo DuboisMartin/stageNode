@@ -3,7 +3,7 @@
 function whenHashChange(){
     if(window.location.hash == "#Home"){
         $("#conteneur").empty();
-        $("#conteneur").load("c.html");
+        $("#conteneur").load("home.html");
     }else if(window.location.hash == "#Temperature"){
         $("#conteneur").empty();
         $("#conteneur").load("temp.html");
