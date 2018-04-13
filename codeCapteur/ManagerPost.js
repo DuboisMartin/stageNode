@@ -1,6 +1,9 @@
 var request = require('request');
 const { StringDecoder } = require('string_decoder');
 
+require('dotenv').config({path: '../config.env'});
+
+
 class Manager{
     constructor(){
         this.buf = Buffer.alloc(6, 0);
@@ -25,7 +28,7 @@ class Manager{
     //Pour le code ascii d'un caractére : String.fromCharCode(data[i]).charCodeAt(0);
 
     tryJoin(){
-        request.get('http://localhost/api').on('response', function(response){ if(response.statusCode == 200) console.log("Api joignable."); else console.log("Api error"); }).on('error', function(err){ console.log("Api error") })
+        request.get('http://'+process.env.SERV_HOST+'/api').on('response', function(response){ if(response.statusCode == 200) console.log("Api joignable."); else console.log("Api error"); }).on('error', function(err){ console.log("Api error") })
     }
 
     addData(data){
@@ -46,7 +49,7 @@ class Manager{
 
     send(){
         var options = {
-            uri: 'http://localhost/api/temp/last?temp='+this.getdata,
+            uri: 'http://'+process.env.SERV_HOST+'/api/temp/last?temp='+this.getdata,
             method: 'POST'
         };
         console.log("Try sending temp");

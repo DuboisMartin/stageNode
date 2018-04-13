@@ -1,11 +1,13 @@
 const Manager = require('./ManagerPost.js');
 
+require('dotenv').config({path: '../config.env'});
+
 var serialport = require("serialport");
 var SerialPort = serialport.SerialPort;
 var Main = new Manager();
 
-var port = new serialport('/dev/ttyACM0', {
-    baudRate: 9600,
+var port = new serialport(process.env.SERIAL_PATH, {
+    baudRate: Number(process.env.SERIAL_BAUDRATE),
     autoOpen: false
 });
 

@@ -1,6 +1,8 @@
 var express = require('express'); 
 var db = require("./databaseManager");
 
+require('dotenv').config({path: '../config.env'});
+
 var hostname = 'localhost'; 
 var port = 80; 
 
@@ -11,7 +13,7 @@ var moment = require('moment');
 var app = express(); 
 
 var reqNumber = 0;
-var intervalID = setInterval(function(){console.log("Nombre de requêtes reçu : " + reqNumber);}, 60000);
+var intervalID = setInterval(function(){console.log("Nombre de requêtes reçu : " + reqNumber);}, Number(process.env.REQ_TIMER));
 
 var myRouter = express.Router(); 
 
@@ -65,7 +67,7 @@ myRouter.route('/api/temp/:idD-:idF')
         res.json(data);
     };
     reqNumber++;
-    if( isNaN(Number(req.params.number)) || typeof Number(req.params.idF) != "number"){
+    if( isNaN(Number(req.params.idD)) || typeof Number(req.params.idF) != "number"){
         res.json({data: "Error"});
     }else{
         dbManager.recupSome(c, Number(req.params.idD), Number(req.params.idF));
@@ -101,7 +103,7 @@ myRouter.route('/api/temp/from/:number-:e')
     if( isNaN(Number(req.params.number)) || !(req.params.e in {sec: '', min: '', hour: '', day: '', month: '', year: ''}) ){
         res.json({data: "error"});
     }else{
-        dbManager.justExec(c, "SELECT id, texte FROM t1 WHERE date BETWEEN '"+moment_timezone().tz("Europe/Paris").subtract(Number(req.params.number), req.params.e).format("YYYY-MM-DD HH:mm:ss")+"' AND '"+moment_timezone().tz("Europe/Paris").format("YYYY-MM-DD HH:mm:ss")+"';");
+        dbManager.justExec(c, "SELECT id, texte FROM "+process.env.TABLE_USE+" WHERE date BETWEEN '"+moment_timezone().tz("Europe/Paris").subtract(Number(req.params.number), req.params.e).format("YYYY-MM-DD HH:mm:ss")+"' AND '"+moment_timezone().tz("Europe/Paris").format("YYYY-MM-DD HH:mm:ss")+"';");
     }
 
 });
@@ -124,7 +126,7 @@ myRouter.route('/api/temp/average/:number-:e')
     if( isNaN(Number(req.params.number)) || !(req.params.e in {sec: '', min: '', hour: '', day: '', month: '', year: ''}) ){
         res.json({data: "error"});
     }else{
-        dbManager.justExec(c, "SELECT id, texte FROM t1 WHERE date BETWEEN '"+moment_timezone().tz("Europe/Paris").subtract(Number(req.params.number), req.params.e).format("YYYY-MM-DD HH:mm:ss")+"' AND '"+moment_timezone().tz("Europe/Paris").format("YYYY-MM-DD HH:mm:ss")+"';");
+        dbManager.justExec(c, "SELECT id, texte FROM "+process.env.TABLE_USE+" WHERE date BETWEEN '"+moment_timezone().tz("Europe/Paris").subtract(Number(req.params.number), req.params.e).format("YYYY-MM-DD HH:mm:ss")+"' AND '"+moment_timezone().tz("Europe/Paris").format("YYYY-MM-DD HH:mm:ss")+"';");
     }
 
 });
@@ -146,7 +148,7 @@ myRouter.route('/api/temp/min/:number-:e')
     if( isNaN(Number(req.params.number)) || typeof Number(req.params.number) != "number" || !(req.params.e in {sec: '', min: '', hour: '', day: '', month: '', year: ''}) ){
         res.json({data: '0', error: "Error in params sended."});
     }else{
-        dbManager.justExec(c, "SELECT id, texte FROM t1 WHERE date BETWEEN '"+moment_timezone().tz("Europe/Paris").subtract(Number(req.params.number), req.params.e).format("YYYY-MM-DD HH:mm:ss")+"' AND '"+moment_timezone().tz("Europe/Paris").format("YYYY-MM-DD HH:mm:ss")+"';");
+        dbManager.justExec(c, "SELECT id, texte FROM "+process.env.TABLE_USE+" WHERE date BETWEEN '"+moment_timezone().tz("Europe/Paris").subtract(Number(req.params.number), req.params.e).format("YYYY-MM-DD HH:mm:ss")+"' AND '"+moment_timezone().tz("Europe/Paris").format("YYYY-MM-DD HH:mm:ss")+"';");
     }
 
 });
@@ -168,14 +170,14 @@ myRouter.route('/api/temp/max/:number-:e')
     if( isNaN(Number(req.params.number)) || !(req.params.e in {sec: '', min: '', hour: '', day: '', month: '', year: ''}) ){
         res.json({data: '0', error: "Error in params sended."});
     }else{
-        dbManager.justExec(c, "SELECT id, texte FROM t1 WHERE date BETWEEN '"+moment_timezone().tz("Europe/Paris").subtract(Number(req.params.number), req.params.e).format("YYYY-MM-DD HH:mm:ss")+"' AND '"+moment_timezone().tz("Europe/Paris").format("YYYY-MM-DD HH:mm:ss")+"';");
+        dbManager.justExec(c, "SELECT id, texte FROM "+process.env.TABLE_USE+" WHERE date BETWEEN '"+moment_timezone().tz("Europe/Paris").subtract(Number(req.params.number), req.params.e).format("YYYY-MM-DD HH:mm:ss")+"' AND '"+moment_timezone().tz("Europe/Paris").format("YYYY-MM-DD HH:mm:ss")+"';");
     }
 
 });
 
 app.use(myRouter);  
 
-app.listen(port, hostname, function(){
-	console.log("Mon serveur fonctionne sur http://"+ hostname +":"+port); 
+app.listen(Number(process.env.SERV_PORT), process.env.SERV_HOST, function(){
+	console.log("Mon serveur fonctionne sur http://"+ process.env.SERV_HOST +":"+process.env.SERV_PORT); 
 });
  
