@@ -1,0 +1,23 @@
+{
+    "bdd":{
+        "bdd_name": "test",
+        "table_name": "capteurs",
+        "sql_host": "localhost",
+        "sql_user": "test",
+        "sql_password": ""
+    },
+    "server":{
+        "server_port": "80",
+        "server_host": "localhost",
+        "req_timer": "30000"
+    },
+    "serial":{
+        "serial_path": "/dev/ttyACM0",
+        "serial_baudrate": "9600"
+    },
+    "capteurs":{
+        "id_capteur_temp": "001",
+        "id_capteur_humi": "002"
+    }
+
+}

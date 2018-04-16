@@ -1,7 +1,7 @@
 var express = require('express'); 
 var db = require("./databaseManager");
 
-require('dotenv').config({path: '../config.env'});
+var config = require('config.json')('../config.json');
 
 var hostname = 'localhost'; 
 var port = 80; 
@@ -13,7 +13,7 @@ var moment = require('moment');
 var app = express(); 
 
 var reqNumber = 0;
-var intervalID = setInterval(function(){console.log("Nombre de requêtes reçu : " + reqNumber);}, Number(process.env.REQ_TIMER));
+var intervalID = setInterval(function(){console.log("Nombre de requêtes reçu : " + reqNumber);}, Number(config.server.req_timer));
 
 var myRouter = express.Router(); 
 
@@ -48,11 +48,13 @@ myRouter.route('/api/:type/last')
         var c = function(data){
             res.json({data : data});
         };
-        let data = dbManager.recupLast( c, process.env.ID_CAPTEUR_TEMP);
+        let data = dbManager.recupLast( c, config.capteurs.id_capteur_temp);
     }else if(req.params.type == 'humi'){
         res.json({data: '0', error: "Not implemented yet."});
     }else if(isIn(dbManager.availableCapteurs, req.params.type.toString())){
         res.json({data:"Ce capteur existe."});
+    }else{
+        res.json({data: '0', error: "Ce capteur n'existe pas."})
     }
 })
 
@@ -62,7 +64,7 @@ myRouter.route('/api/:type/last')
         var c = function(data){
             res.json({message: data});
         };
-        let data = dbManager.save(req.query.data, req.query.idCapteur, process.env.ID_CAPTEUR_TEMP, c);
+        let data = dbManager.save(req.query.data, req.query.idCapteur, config.capteurs.id_capteur_temp, c);
     }else if(req.params.type == 'humi'){
         res.json({data: '0', error: "Not implemented yet."});
     }
@@ -81,28 +83,12 @@ myRouter.route('/api/:type/:idD-:idF')
         if( isNaN(Number(req.params.idD)) || typeof Number(req.params.idF) != "number"){
             res.json({data: "Error in params sended."});
         }else{
-            dbManager.recupSome(c, req.params.idD, req.params.idF, process.env.ID_CAPTEUR_TEMP);
+            dbManager.recupSome(c, req.params.idD, req.params.idF, config.capteurs.id_capteur_temp);
         }
     }else if(req.params.type == 'humi'){
         res.json({data: '0', error: "Not implemented yet."});
     }
 });
-
-/*myRouter.route('/api/temp/:idD-:idF')
-//region Description de cette route
-.get(function(req, res){
-    let json = [{}]; 
-    var c = function(data){
-        res.json(data);
-    };
-    reqNumber++;
-    if( isNaN(Number(req.params.idD)) || typeof Number(req.params.idF) != "number"){
-        res.json({data: "Error"});
-    }else{
-        dbManager.recupSome(c, Number(req.params.idD), Number(req.params.idF));
-    }
-})*/
-//endregion
 
 myRouter.route('/api/:type/tail/:number')
 
@@ -124,7 +110,7 @@ myRouter.route('/api/:type/tail/:number')
 
 myRouter.route('/api/:type/from/:number-:e')
 .get(function(req, res){
-    if(req.params.type == 'type'){
+    if(req.params.type == 'temp'){
         var c = function(data){
             res.json(data);
         };
@@ -132,7 +118,7 @@ myRouter.route('/api/:type/from/:number-:e')
         if( isNaN(Number(req.params.number)) || !(req.params.e in {sec: '', min: '', hour: '', day: '', month: '', year: ''}) ){
             res.json({data: "Error in params sended."});
         }else{
-            dbManager.justExec(c, "SELECT id, data FROM "+process.env.TABLE_USE+" WHERE date BETWEEN '"+moment_timezone().tz("Europe/Paris").subtract(Number(req.params.number), req.params.e).format("YYYY-MM-DD HH:mm:ss")+"' AND '"+moment_timezone().tz("Europe/Paris").format("YYYY-MM-DD HH:mm:ss")+"';");
+            dbManager.justExec(c, "SELECT id, data FROM "+config.bdd.table_name+" WHERE timestamp BETWEEN '"+moment_timezone().tz("Europe/Paris").subtract(Number(req.params.number), req.params.e).format("YYYY-MM-DD HH:mm:ss")+"' AND '"+moment_timezone().tz("Europe/Paris").format("YYYY-MM-DD HH:mm:ss")+"';");
         }
     }else if(req.params.type == 'humi'){
         res.json({data: '0', error: "Not implemented yet."});
@@ -159,7 +145,7 @@ myRouter.route('/api/:type/average/:number-:e')
         if( isNaN(Number(req.params.number)) || !(req.params.e in {sec: '', min: '', hour: '', day: '', month: '', year: ''}) ){
             res.json({data: "Error in params sended."});
         }else{
-            dbManager.justExec(c, "SELECT id, data FROM "+process.env.TABLE_USE+" WHERE date BETWEEN '"+moment_timezone().tz("Europe/Paris").subtract(Number(req.params.number), req.params.e).format("YYYY-MM-DD HH:mm:ss")+"' AND '"+moment_timezone().tz("Europe/Paris").format("YYYY-MM-DD HH:mm:ss")+"';");
+            dbManager.justExec(c, "SELECT id, data FROM "+config.bdd.table_name+" WHERE timestamp BETWEEN '"+moment_timezone().tz("Europe/Paris").subtract(Number(req.params.number), req.params.e).format("YYYY-MM-DD HH:mm:ss")+"' AND '"+moment_timezone().tz("Europe/Paris").format("YYYY-MM-DD HH:mm:ss")+"';");
         }
     }else if(req.params.type == 'humi'){
         res.json({data: '0', error: "Not implemented yet."});
@@ -184,7 +170,7 @@ myRouter.route('/api/:type/min/:number-:e')
         if( isNaN(Number(req.params.number)) || typeof Number(req.params.number) != "number" || !(req.params.e in {sec: '', min: '', hour: '', day: '', month: '', year: ''}) ){
             res.json({data: '0', error: "Error in params sended."});
         }else{
-            dbManager.justExec(c, "SELECT id, data FROM "+process.env.TABLE_USE+" WHERE date BETWEEN '"+moment_timezone().tz("Europe/Paris").subtract(Number(req.params.number), req.params.e).format("YYYY-MM-DD HH:mm:ss")+"' AND '"+moment_timezone().tz("Europe/Paris").format("YYYY-MM-DD HH:mm:ss")+"';");
+            dbManager.justExec(c, "SELECT id, data FROM "+config.bdd.table_name+" WHERE timestamp BETWEEN '"+moment_timezone().tz("Europe/Paris").subtract(Number(req.params.number), req.params.e).format("YYYY-MM-DD HH:mm:ss")+"' AND '"+moment_timezone().tz("Europe/Paris").format("YYYY-MM-DD HH:mm:ss")+"';");
         }
     }else if(req.params.type == 'humi'){
         res.json({data: '0', error: "Not implemented yet."});
@@ -209,7 +195,7 @@ myRouter.route('/api/:type/max/:number-:e')
         if( isNaN(Number(req.params.number)) || !(req.params.e in {sec: '', min: '', hour: '', day: '', month: '', year: ''}) ){
             res.json({data: '0', error: "Error in params sended."});
         }else{
-            dbManager.justExec(c, "SELECT id, data FROM "+process.env.TABLE_USE+" WHERE date BETWEEN '"+moment_timezone().tz("Europe/Paris").subtract(Number(req.params.number), req.params.e).format("YYYY-MM-DD HH:mm:ss")+"' AND '"+moment_timezone().tz("Europe/Paris").format("YYYY-MM-DD HH:mm:ss")+"';");
+            dbManager.justExec(c, "SELECT id, data FROM "+config.bdd.table_name+" WHERE timestamp BETWEEN '"+moment_timezone().tz("Europe/Paris").subtract(Number(req.params.number), req.params.e).format("YYYY-MM-DD HH:mm:ss")+"' AND '"+moment_timezone().tz("Europe/Paris").format("YYYY-MM-DD HH:mm:ss")+"';");
         }
     }else if(req.params.type == 'humi'){
         res.json({data: '0', error: "Not implemented yet."});
@@ -218,7 +204,7 @@ myRouter.route('/api/:type/max/:number-:e')
 
 app.use(myRouter);  
 
-app.listen(Number(process.env.SERV_PORT), process.env.SERV_HOST, function(){
-	console.log("Mon serveur fonctionne sur http://"+ process.env.SERV_HOST +":"+process.env.SERV_PORT); 
+app.listen(Number(config.server.server_port), config.server.server_host, function(){
+	console.log("Mon serveur fonctionne sur http://"+ config.server.server_host +":"+config.server.server_port); 
 });
  

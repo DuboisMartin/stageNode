@@ -1,6 +1,6 @@
 var temp = document.getElementById("GraphTemp");
 var don;
-$.get("http://localhost/api/temp/0-1000", function( data ){
+$.get("http://localhost/api/temp/0-100", function( data ){
     don = data;
 
     var bool = true;
@@ -14,7 +14,7 @@ $.get("http://localhost/api/temp/0-1000", function( data ){
     test.datasets[0].fill = false;
     test.datasets[0].data = [];
     for(var i =0; i < data.length; i++){
-        test.datasets[0].data[i] = data[i].texte; 
+        test.datasets[0].data[i] = data[i].data; 
         if(bool){
             test.labels[i] = data[i].id;
             bool = !bool;
@@ -30,7 +30,7 @@ $.get("http://localhost/api/temp/0-1000", function( data ){
         options: {
             elements: {
                 line: {
-                    tension: 0, // disables bezier curves
+                    tension: 0.5, // disables bezier curves
                 }
             }
         }

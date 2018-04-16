@@ -1,9 +1,6 @@
-//COMMENTAIRE
-//Le code ne fonctionne pas sur le site mais fonctionne sur postman, il faut finir d'adapté le code pour la nouvelle base.
-
 var mysql = require('mysql');
 
-require('dotenv').config({path: '../config.env'});
+var config = require('config.json')('../config.json');
 
 function isIn(tab, data){
     for(var i = 0; i< tab.length; i++){
@@ -16,17 +13,17 @@ function isIn(tab, data){
 
 class databaseManager{
     constructor(){
-        this.con = mysql.createConnection({ host: process.env.SQL_HOST, user: process.env.SQL_USER, password: process.env.SQL_PASSWORD })
+        this.con = mysql.createConnection({ host: config.bdd.sql_host, user: config.bdd.sql_user, password: config.bdd.sql_password })
         this.con.connect(function(err){
             if(err){
                 throw err;
             }
         });
-        this.con.query("USE "+process.env.BDD_NAME+";", function(err, res){if(err)throw err;});
+        this.con.query("USE "+config.bdd.bdd_name+";", function(err, res){if(err)throw err;});
         this.availableCapteurs = [];
         this.makeList();
         var that = this;
-        setInterval(function(){ that.makeList();}, 10000);
+        setInterval(function(){ that.makeList(); }, 60000);
     }
 
 
@@ -49,7 +46,7 @@ class databaseManager{
     }
 
     save(data, idCapteur, callback){
-        var req = "INSERT INTO "+process.env.TABLE_USE+" VALUES(0, '"+data+"','"+idCapteur+"', '', '', CURRENT_TIMESTAMP);";
+        var req = "INSERT INTO "+config.bdd.table_name+" VALUES(0, '"+data+"','"+idCapteur+"', '', '', CURRENT_TIMESTAMP);";
         this.con.query(req, function(err, result){
             if(err){
                 return err;
@@ -60,7 +57,7 @@ class databaseManager{
     }
 
     recupSome(callback, idD, idF, idCapteur){
-        var req = "SELECT id, data FROM "+process.env.TABLE_USE+" WHERE id BETWEEN '"+idD+"' and '"+idF+"';";
+        var req = "SELECT id, data FROM "+config.bdd.table_name+" WHERE id BETWEEN '"+idD+"' and '"+idF+"';";
         this.con.query(req, function(err, result){
             if(err){
                 return err;
@@ -71,7 +68,7 @@ class databaseManager{
     }
 
     recup(callback, id, idCapteur){
-        var req = "SELECT id, data FROM "+process.env.TABLE_USE+" WHERE id = "+id;
+        var req = "SELECT id, data FROM "+config.bdd.table_name+" WHERE id = "+id;
         this.con.query(req, function(err, result){
             if(err) throw err;
             else callback(result[0].texte, id);
@@ -79,7 +76,7 @@ class databaseManager{
     }
 
     recupLast(callback , idCapteur, number = 1){
-        var req = "SELECT id, data FROM "+process.env.TABLE_USE+" ORDER BY id DESC LIMIT "+number+";";
+        var req = "SELECT id, data FROM "+config.bdd.table_name+" ORDER BY id DESC LIMIT "+number+";";
         this.con.query(req, function(err, result){
             if(err){
                 throw err;
