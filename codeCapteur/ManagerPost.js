@@ -49,10 +49,11 @@ class Manager{
 
     send(){
         var options = {
-            uri: 'http://'+config.server.server_host+'/api/temp/last?temp='+this.getdata,
+            uri: 'https://'+config.server.server_host+'/api/001/last?raw_data='+this.getdata,
             method: 'POST'
         };
         console.log("Try sending temp");
+        console.log(options.uri)
         request(options, function(error, response, body) {
             if(!error && response.statusCode == 200){
                 console.log("temp sended.");

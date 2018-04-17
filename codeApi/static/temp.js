@@ -1,6 +1,6 @@
 var temp = document.getElementById("GraphTemp");
 var don;
-$.get("https://localhost/api/temp/0-100", function( data ){
+$.get("https://localhost/api/001/0-100", function( data ){
     don = data;
 
     var bool = true;

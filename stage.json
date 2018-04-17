@@ -1,0 +1,118 @@
+{
+	"info": {
+		"_postman_id": "40eec536-eba4-42cd-bbac-15b35db759c4",
+		"name": "stage",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "GET 0-1000",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "https://localhost/api/001/0-1000",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"api",
+						"001",
+						"0-1000"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET from",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "https://localhost/api/001/from/10-day",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"api",
+						"001",
+						"from",
+						"10-day"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET tail",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "https://localhost/api/001/tail/100",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"api",
+						"001",
+						"tail",
+						"100"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET max",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "https://localhost/api/001/max/10-day",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"api",
+						"001",
+						"max",
+						"10-day"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET min",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "https://localhost/api/001/min/10-day",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"api",
+						"001",
+						"min",
+						"10-day"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
