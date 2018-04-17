@@ -1,5 +1,7 @@
 var express = require('express'); 
 var db = require("./databaseManager");
+const fs = require('fs');
+
 
 var config = require('config.json')('../config.json');
 
@@ -17,7 +19,7 @@ var intervalID = setInterval(function(){console.log("Nombre de requêtes reçu :
 
 var myRouter = express.Router(); 
 
-//Fonction qui va êtres utile apres 
+//Fonction 
 function isIn(tab, data){
     for(var i = 0; i< tab.length; i++){
         if(tab[i].toString() == data.toString()){
@@ -27,21 +29,30 @@ function isIn(tab, data){
     return false;
 }
 
-//region Description de la route statique
+/*//region Description de la route statique
 myRouter.route('/').get(function(req, res){ res.sendFile(__dirname+'/static/index.html');});
 myRouter.route('/favicon.png').get(function(req, res){ res.sendFile(__dirname+'/static/favicon.png');});
 myRouter.route('/style.css').get(function(req, res){ res.sendFile(__dirname+'/static/style.css');});
 myRouter.route('/script.js').get(function(req, res){ res.sendFile(__dirname+'/static/script.js');});
-myRouter.route('/home.html').get(function(req, res){ res.sendFile(__dirname+'/static/contenuHome.html')});
-myRouter.route('/temp.html').get(function(req, res){ res.sendFile(__dirname+'/static/contenuTemp.html')});
+myRouter.route('/contenuHome.html').get(function(req, res){ res.sendFile(__dirname+'/static/contenuHome.html')});
+myRouter.route('/contenuTemp.html').get(function(req, res){ res.sendFile(__dirname+'/static/contenuTemp.html')});
 myRouter.route('/temp.js').get(function(req, res) { res.sendFile(__dirname+'/static/temp.js')});
 myRouter.route('/home.js').get(function(req, res){ res.sendFile(__dirname+'/static/home.js')});
-//endregion
+//endregion*/
+fs.readdir('static/', (err, files) => {
+    files.forEach(file => {
+        if(file == "index.html"){
+            myRouter.route('/').get(function(req, res){ res.sendFile(__dirname+'/static/'+file);});
+        }else{
+            myRouter.route('/'+file).get(function(req, res){ res.sendFile(__dirname+'/static/'+file);});
+        }
+    });
+})
 
 myRouter.route('/api').get(function(req, res){ reqNumber ++; res.json({data : "Hello world!"}); });
 
 myRouter.route('/api/:type/last')
-//region Description de cette route
+//region
 .get(function(req,res){ 
     if(req.params.type == 'temp'){
         reqNumber++;
@@ -64,7 +75,8 @@ myRouter.route('/api/:type/last')
         var c = function(data){
             res.json({message: data});
         };
-        let data = dbManager.save(req.query.data, req.query.idCapteur, config.capteurs.id_capteur_temp, c);
+        console.log(req.query);
+        let data = dbManager.save(req.query.temp, 0, c);
     }else if(req.params.type == 'humi'){
         res.json({data: '0', error: "Not implemented yet."});
     }
@@ -207,4 +219,11 @@ app.use(myRouter);
 app.listen(Number(config.server.server_port), config.server.server_host, function(){
 	console.log("Mon serveur fonctionne sur http://"+ config.server.server_host +":"+config.server.server_port); 
 });
- 
+
+//Essai pour https
+var https = require('https');
+https.createServer({
+    key : fs.readFileSync('key.pem'),
+    cert: fs.readFileSync('cert.pem')
+}, app).listen(443);
+//
