@@ -19,6 +19,8 @@ var intervalID = setInterval(function(){console.log("Nombre de requêtes reçu :
 
 var myRouter = express.Router(); 
 
+dbManager.updateList(config.capteurs);
+
 //Fonction 
 function isIn(tab, data){
     for(var i = 0; i< tab.length; i++){
@@ -91,7 +93,7 @@ myRouter.route('/api/:capt/:idD-:idF')
         if( isNaN(Number(req.params.idD)) || typeof Number(req.params.idF) != "number"){
             res.json({data: "Error in params sended."});
         }else{
-            dbManager.recupSome(c, req.params.idD, req.params.idF, config.capteurs.id_capteur_temp);
+            dbManager.recupSome(c, req.params.idD, req.params.idF, req.params.capt.toString());
         }
     }else if(req.params.capt == 'humi'){
         res.json({data: '0', error: "Not implemented yet."});

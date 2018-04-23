@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Hello world!</title>
+        <link rel="stylesheet" href="./style.css">
+        <link rel="stylesheet" href="./node_modules/bootstrap/dist/css/bootstrap.min.css">
+    </head>
+    <body>
+        <div id="particles-js">
+            <div class="container h-100 d-flex justify-content-center supp">
+                <div class="my-auto form-group">
+                    <form id="form" class="mb-4">
+                        <img class="mb-3" src="mis.png" alt="">
+                        <h1 class="h4 mb-3 font-weight-normal text-center">Veuillez vous connecter</h1>
+                        <input type="text" class="form-control" id="LOGIN" placeholder="Login">
+                        <input type="password" class="form-control" id="PASSWORD" placeholder="Password">
+                        <input type="submit" id="send" class="btn btn-lg btn-primary btn-block" value="Connexion" onclick='return false;'>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </body>
+    <script src="./node_modules/particles.js/particles.js"></script>
+    <script src="./node_modules/particles.js/demo/js/app.js"></script>
+    <script>
+        var ipcRenderer = require('electron').ipcRenderer; 
+        document.getElementById('send').addEventListener('click', function(){
+            console.log("Activated");
+            ipcRenderer.send('send', document.getElementById('LOGIN').value+":"+document.getElementById('PASSWORD').value);
+        });
+    </script>
+</html>
