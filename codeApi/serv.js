@@ -2,7 +2,6 @@ var express = require('express');
 var db = require("./databaseManager");
 const fs = require('fs');
 
-
 var config = require('config.json')('../config.json');
 
 var hostname = 'localhost'; 
@@ -212,6 +211,35 @@ myRouter.route('/api/:capt/max/:number-:e')
     }
 });
 
+//Routes utilisées pour l'utilitaire
+myRouter.route('/api/util/config')
+.get(function(req, res) {
+    var c = function(data){
+        if(data.length == 0){
+            res.json({data: '0', error: "No data."});
+        }else{
+            res.json(data);
+        }
+    };
+    reqNumber++;
+    dbManager.justExec(c, "SELECT id, hash, timestamp FROM test;");
+});
+
+myRouter.route('/api/util/config/:id')
+.get(function(req, res) {
+    var c = function(data){
+        if(data.length == 0){
+            res.json({data: '0', error: "No data."});
+        }else{
+            res.json(data);
+        }
+    }
+    reqNumber++;
+    dbManager.justExec(c, "SELECT raw_data FROM test where id = '"+req.params.id+"' ;");
+});
+//
+
+
 app.use(myRouter);
 
 var https = require('https');
@@ -219,3 +247,21 @@ https.createServer({
     key : fs.readFileSync('key.pem'),
     cert: fs.readFileSync('cert.pem')
 }, app).listen(443);
+
+const server = require('http').createServer();
+
+const io = require('socket.io').listen(server);
+
+io.sockets.on('connection', function (socket) {
+    console.log("Un client est connecté !");
+    socket.on('log', function(msg) {
+        console.log(msg);
+        if(msg == "Martin:Dubois"){
+            socket.emit('log-rep', "OK");
+        }else{
+            socket.emit('log-rep', "NOP");
+        }
+    });
+});
+
+server.listen(3000);

@@ -4,12 +4,16 @@ const BrowserWindow = electron.BrowserWindow;
 const Tray = electron.Tray;
 var ipcMain = require('electron').ipcMain;
 const socket = require('socket.io-client')('http://127.0.0.1:3000');
+const https = require('https');
+var tmp = require('tmp');
 
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
-let mainWindow
+let logWindow;
+let mainWindow;
 
-function createWindow() {
-	mainWindow = new BrowserWindow({
+function createLogWindow() {
+	logWindow = new BrowserWindow({
 		width: 1200, 
 		height: 800,
 		icon: 'mis.png',
@@ -17,14 +21,11 @@ function createWindow() {
 		maximizable: false
 	});
 
-	mainWindow.loadURL('file:'+__dirname+'/index.html');
+	logWindow.loadURL('file:'+__dirname+'/assets/html/index.html');
 
-	mainWindow.on('closed', () => {
-		mainWindow = null
+	logWindow.on('closed', () => {
+		logWindow = null
 	});
-
-	const tray = new Tray('mis.png');
-	tray.setToolTip('Utilitaire API');
 
 	ipcMain.on('send', function(event, arg) {
 		console.log(arg);
@@ -33,7 +34,7 @@ function createWindow() {
 	});
 }
 
-app.on('ready', createWindow);
+app.on('ready', createLogWindow);
 
 app.on('window-all-closed', () => {
 	if(process.platform !== 'darwin'){
@@ -42,11 +43,69 @@ app.on('window-all-closed', () => {
 });
 
 app.on('activate', () => {
-	if (mainWindow === null){
+	if (logWindow === null){
 		createWindow();
 	}
 });
 
 socket.on('log-rep', function(rep){
 	console.log(rep);
+	if(rep == 'OK'){
+		logWindow.hide();
+		createMainWindow();
+		logWindow.close();
+	}
 });
+
+function createMainWindow() {
+	mainWindow = new BrowserWindow({
+		width: 1200, 
+		height: 800,
+		icon: 'mis.png',
+		title:'Utilitaire API',
+		fullscreenable: true,
+		resizable: true,
+		focusable: true
+	});
+
+	mainWindow.loadURL('file:'+__dirname+'/assets/html/utilitaire.html');
+
+	mainWindow.on('closed', () => {
+		mainWindow = null
+	});
+
+	ipcMain.on('loaded', function(event, arg) {
+		https.get("https://localhost/api/util/config", function(resp) {
+			let data = '';
+			resp.on('data', function(chunk) {
+				data += chunk;
+			});
+			resp.on('end', function(){
+				for(var i = 0; i<JSON.parse(data).length; i++){
+					event.sender.send("loaded-return", "<tr><td scope=\"row\">"+JSON.parse(data)[i].id+"</td><td scope=\"row\">"+JSON.parse(data)[i].hash.substring(0,10)+"..</td><td scope=\"row\">"+new Date(JSON.parse(data)[i].timestamp).toISOString().substring(11, 19)+' '+new Date(JSON.parse(data)[i].timestamp).toISOString().substring(2, 10)+"</td><td scope=\"row\"><input type=\"image\" id=\""+JSON.parse(data)[i].id+"\" class=\"btn btn-default\" src=\"../img/glyphicons-eye-open.png\" /><input type=\"image\" id=\""+"buttonSave"+JSON.parse(data)[i].id+"\" class=\"btn btn-default\" src=\"../img/glyphicons-remove.png\" /></td></tr>");
+				}
+			});
+		}).on("error", (err) => {
+			console.log("Error: " + err.message);
+		});
+	});
+
+	ipcMain.on('event', function(event, arg) {
+		console.log(arg);
+		if(!isNaN(Number(arg))){
+			https.get("https://localhost/api/util/config/"+arg, function(resp) {
+				let data = '';
+				resp.on('data', function(chunk) {
+					data += chunk;
+				});
+				resp.on('end', function(){
+					for(var i = 0; i<JSON.parse(data).length; i++){
+						event.sender.send();
+					}
+				});
+			}).on("error", (err) => {
+				console.log("Error: " + err.message);
+			});
+		} 
+	});
+}
