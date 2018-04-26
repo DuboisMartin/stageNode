@@ -228,14 +228,18 @@ myRouter.route('/api/util/config')
 myRouter.route('/api/util/config/:id')
 .get(function(req, res) {
     var c = function(data){
+        console.timeEnd('dbneed');
         if(data.length == 0){
             res.json({data: '0', error: "No data."});
         }else{
             res.json(data);
         }
     }
+    console.log(Date.now());
     reqNumber++;
-    dbManager.justExec(c, "SELECT raw_data FROM test where id = '"+req.params.id+"' ;");
+    console.time('dbneed');
+    dbManager.justExec(c, "SELECT * FROM test where id = '"+req.params.id+"' ;");
+
 });
 //
 

@@ -93,15 +93,17 @@ function createMainWindow() {
 	ipcMain.on('event', function(event, arg) {
 		console.log(arg);
 		if(!isNaN(Number(arg))){
+			console.time("dbneed");
+			console.log(Date.now());
 			https.get("https://localhost/api/util/config/"+arg, function(resp) {
 				let data = '';
 				resp.on('data', function(chunk) {
+					console.log('+');
 					data += chunk;
 				});
 				resp.on('end', function(){
-					for(var i = 0; i<JSON.parse(data).length; i++){
-						event.sender.send();
-					}
+					console.timeEnd("dbneed");
+					//event.sender.send();
 				});
 			}).on("error", (err) => {
 				console.log("Error: " + err.message);
