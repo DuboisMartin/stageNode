@@ -5,20 +5,39 @@ ipcRenderer.on('loaded-return', function(arg, data) {
     document.getElementById('bod').insertAdjacentHTML('beforeend', data);
 });
 
+function ab2str(buf) {
+    return String.fromCharCode.apply(null, new Uint16Array(buf));
+}
+
+function syntaxHighlight(json) {
+    json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+        var cls = 'number';
+        if (/^"/.test(match)) {
+            if (/:$/.test(match)) {
+                cls = 'key';
+            } else {
+                cls = 'string';
+            }
+        } else if (/true|false/.test(match)) {
+            cls = 'boolean';
+        } else if (/null/.test(match)) {
+            cls = 'null';
+        }
+        return '<span class="' + cls + '">' + match + '</span>';
+    });
+}
+
 ipcRenderer.on('event-return', function(arg, data) {
     console.log('event-return');
     document.getElementById("print")
-    var dec = new TextDecoder("ASCII");
+    var dec = new TextDecoder("ascii");
     var raw_data = String(JSON.parse(data.substring(1, data.length-1)).raw_data.data).split(',');
-
-    var size = raw_data.length;
-
-    var buffer = new ArrayBuffer(size);
-
-    for(var i = 0; i < size; i++){
-        buffer[i] = Number(raw_data[i]).toString(16);
+    let div = document.getElementById("print");
+    while (div.firstChild) {
+        div.removeChild(div.firstChild);
     }
-    document.getElementById("print").insertAdjacentText('afterbegin', dec.decode(buffer));
+    document.getElementById("print").appendChild(document.createElement('pre')).innerHTML = syntaxHighlight(ab2str(raw_data));
 })
 
 window.onload= function(){
@@ -26,6 +45,5 @@ window.onload= function(){
 }
 
 document.addEventListener('click', function(event) {
-    console.log(event.target.id);
     ipcRenderer.send('event', event.target.id);
 });

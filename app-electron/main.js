@@ -5,7 +5,6 @@ const Tray = electron.Tray;
 var ipcMain = require('electron').ipcMain;
 const socket = require('socket.io-client')('http://127.0.0.1:3000');
 const https = require('https');
-var tmp = require('tmp');
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
@@ -91,7 +90,16 @@ function createMainWindow() {
 	});
 
 	ipcMain.on('event', function(event, arg) {
-		console.log(arg);
+		console.log("arg : "+arg);
+		electron.dialog.showMessageBox({
+			type: 'warning',
+			title: 'Suppression',
+			message: 'Etes-vous sur de vouloir supprimé cette configuration définitivement ?',
+			buttons: ['Oui', 'Non']
+		}, function(index){
+			console.log(index);
+		});
+
 		if(!isNaN(Number(arg))){
 			console.time("dbneed");
 			console.log(Date.now());
