@@ -238,7 +238,7 @@ myRouter.route('/api/util/config/:id')
     console.log(Date.now());
     reqNumber++;
     console.time('dbneed');
-    dbManager.justExec(c, "SELECT * FROM test where id = '"+req.params.id+"' ;");
+    dbManager.justExec(c, "SELECT id, raw_data FROM test where id = '"+req.params.id+"' ;");
 
 });
 //

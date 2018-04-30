@@ -75,7 +75,7 @@ function createMainWindow() {
 	});
 
 	ipcMain.on('loaded', function(event, arg) {
-		https.get("https://localhost/api/util/config", function(resp) {
+		https.get("https://127.0.0.1/api/util/config", function(resp) {
 			let data = '';
 			resp.on('data', function(chunk) {
 				data += chunk;
@@ -95,7 +95,7 @@ function createMainWindow() {
 		if(!isNaN(Number(arg))){
 			console.time("dbneed");
 			console.log(Date.now());
-			https.get("https://localhost/api/util/config/"+arg, function(resp) {
+			https.get("https://127.0.0.1/api/util/config/"+arg, function(resp) {
 				let data = '';
 				resp.on('data', function(chunk) {
 					console.log('+');
@@ -103,7 +103,7 @@ function createMainWindow() {
 				});
 				resp.on('end', function(){
 					console.timeEnd("dbneed");
-					//event.sender.send();
+					event.sender.send('event-return',data);
 				});
 			}).on("error", (err) => {
 				console.log("Error: " + err.message);
