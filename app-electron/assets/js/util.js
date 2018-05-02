@@ -1,7 +1,5 @@
-var ipcRenderer = require('electron').ipcRenderer; 
+var ipcRenderer = require('electron').ipcRenderer;
 ipcRenderer.on('loaded-return', function(arg, data) {
-    console.log(arg);
-    console.log("recv");
     document.getElementById('bod').insertAdjacentHTML('beforeend', data);
 });
 
@@ -28,16 +26,26 @@ function syntaxHighlight(json) {
     });
 }
 
-ipcRenderer.on('event-return', function(arg, data) {
+ipcRenderer.on('event-return', function(arg, data, baseReq) {
     console.log('event-return');
     document.getElementById("print")
-    var dec = new TextDecoder("ascii");
-    var raw_data = String(JSON.parse(data.substring(1, data.length-1)).raw_data.data).split(',');
-    let div = document.getElementById("print");
-    while (div.firstChild) {
-        div.removeChild(div.firstChild);
+    if(baseReq == "See"){
+        var dec = new TextDecoder("ascii");
+        var raw_data = String(JSON.parse(data.substring(1, data.length-1)).raw_data.data).split(',');
+        let div = document.getElementById("print");
+        while (div.firstChild) {
+            div.removeChild(div.firstChild);
+        }
+        document.getElementById("print").appendChild(document.createElement('pre')).innerHTML = syntaxHighlight(ab2str(raw_data));
+    }else if(baseReq == "Save"){
+        let myNotification = new Notification('Save', {
+            body: 'Configuration saved!'
+          });        
+    }else if(baseReq == "Delete"){
+        let myNotification = new Notification('Delete', {
+            body: 'Deleted!'
+          });
     }
-    document.getElementById("print").appendChild(document.createElement('pre')).innerHTML = syntaxHighlight(ab2str(raw_data));
 })
 
 window.onload= function(){

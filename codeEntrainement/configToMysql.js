@@ -1,3 +1,15 @@
+var path = "config.json";
+
+var mysql = require('mysql');
+
+var con = mysql.createConnection({ host: "127.0.0.1", user: "test", password: "" });
+con.connect(function(err){
+    if(err){
+        throw err;
+    }
+});
+con.query("USE test;", function(err, res){if(err)throw err;});
+
 function saveConfig(config_path, mysql_con){
     this.config_path = config_path;
     this.mysql_con = mysql_con;
@@ -39,6 +51,7 @@ function saveConfig(config_path, mysql_con){
                 };
             mysql_con.query(query, values, function (er, da) {
                 if(er)throw er;
+                return 0;
             });
         })
 
@@ -46,3 +59,5 @@ function saveConfig(config_path, mysql_con){
 
 
 }
+
+saveConfig(path, con);
