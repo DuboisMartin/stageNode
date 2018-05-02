@@ -81,7 +81,7 @@ function createMainWindow() {
 			});
 			resp.on('end', function(){
 				for(var i = 0; i<JSON.parse(data).length; i++){
-					event.sender.send("loaded-return", "<tr><td scope=\"row\">"+JSON.parse(data)[i].id+"</td><td scope=\"row\">"+JSON.parse(data)[i].hash.substring(0,10)+"..</td><td scope=\"row\">"+new Date(JSON.parse(data)[i].timestamp).toISOString().substring(11, 19)+' '+new Date(JSON.parse(data)[i].timestamp).toISOString().substring(2, 10)+"</td><td scope=\"row\"><input type=\"image\" id=\""+JSON.parse(data)[i].id+"\" class=\"btn btn-default\" src=\"../img/glyphicons-eye-open.png\" /><input type=\"image\" id=\""+"buttonSave"+JSON.parse(data)[i].id+"\" class=\"btn btn-default\" src=\"../img/glyphicons-remove.png\" /></td></tr>");
+					event.sender.send("loaded-return", "<tr><td scope=\"row\">"+JSON.parse(data)[i].id+"</td><td scope=\"row\">"+JSON.parse(data)[i].hash.substring(0,10)+"..</td><td scope=\"row\">"+new Date(JSON.parse(data)[i].timestamp).toISOString().substring(11, 19)+' '+new Date(JSON.parse(data)[i].timestamp).toISOString().substring(2, 10)+"</td><td scope=\"row\"> <input type=\"image\" id=\"See:"+JSON.parse(data)[i].id+"\" class=\"btn btn-default\" src=\"../img/glyphicons-eye-open.png\" /> <input type=\"image\" id=\""+"Save:"+JSON.parse(data)[i].id+"\" class=\"btn btn-default\" src=\"../img/glyphicons-disk-saved.png\" /> <input type=\"image\" id=\""+"Delete:"+JSON.parse(data)[i].id+"\" class=\"btn btn-default\" src=\"../img/glyphicons-remove.png\" /> </td></tr>");
 				}
 			});
 		}).on("error", (err) => {
@@ -90,20 +90,22 @@ function createMainWindow() {
 	});
 
 	ipcMain.on('event', function(event, arg) {
-		console.log("arg : "+arg);
-		electron.dialog.showMessageBox({
+		let action = arg.split(':')[0];
+		let num = arg.split(':')[1];
+
+		/*electron.dialog.showMessageBox({
 			type: 'warning',
 			title: 'Suppression',
 			message: 'Etes-vous sur de vouloir supprimé cette configuration définitivement ?',
 			buttons: ['Oui', 'Non']
 		}, function(index){
 			console.log(index);
-		});
+		});*/
 
-		if(!isNaN(Number(arg))){
+		if(action == "See") {
 			console.time("dbneed");
 			console.log(Date.now());
-			https.get("https://127.0.0.1/api/util/config/"+arg, function(resp) {
+			https.get("https://127.0.0.1/api/util/config/"+num, function(resp) {
 				let data = '';
 				resp.on('data', function(chunk) {
 					console.log('+');
@@ -111,11 +113,41 @@ function createMainWindow() {
 				});
 				resp.on('end', function(){
 					console.timeEnd("dbneed");
-					event.sender.send('event-return',data);
+					event.sender.send('event-return', data);
 				});
 			}).on("error", (err) => {
 				console.log("Error: " + err.message);
 			});
-		} 
+		}else if(action == "Save") {
+			console.time("dbSave");
+			console.log(Date.now());
+			https.get("https://127.0.0.1/api/util/config/"+num, function(resp) {
+				let data= '';
+				resp.on('data', function(chunk) {
+					data += chunk;
+				}),
+				resp.on('end', function() {
+					console.timeEnd("dbSave");
+					event.sender.send('event-return', data)
+				});
+			}).on("error", (err) => {
+				console.log("Error: " + err.message);
+			});
+		}else if(action == "Delete") {
+			console.time("dbDelete");
+			console.log(Date.now());
+			https.get("https://127.0.0.1/api/util/config/"+num+"/delete/", function(resp) {
+				let data = '';
+				resp.on('data', function(chunk) {
+					data += chunk;
+				}),
+				resp.on('end', function() {
+					console.timeEnd("dbDelete");
+					event.sender.send('event-return', data)
+				});
+			}).on("error", (err) => {
+				console.log("Error: " + err.message);
+			});
+		}
 	});
 }

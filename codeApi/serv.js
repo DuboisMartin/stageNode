@@ -241,6 +241,23 @@ myRouter.route('/api/util/config/:id')
     dbManager.justExec(c, "SELECT id, raw_data FROM test where id = '"+req.params.id+"' ;");
 
 });
+
+myRouter.route('/api/util/config/:id/delete')
+.get(function(req, res) {
+    var c = function(data){
+        console.timeEnd('dbdelete');
+        if(data.length == 0){
+            res.json({data: '0', error: "No data."});
+        }else{
+            console.log(data);
+            res.json(data);
+        }
+    }
+    console.log(Date.now());
+    reqNumber++;
+    console.time('dbdelete');
+    dbManager.justExec(c, "DELETE FROM test WHERE id ='"+req.params.id+"' ;");
+})
 //
 
 
