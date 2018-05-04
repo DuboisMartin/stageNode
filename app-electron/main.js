@@ -17,6 +17,8 @@ function createLogWindow() {
 		y: 200,
 		width: 1200, 
 		height: 800,
+		maxWidth: 1200,
+		maxHeight: 800,
 		icon: 'mis.png',
 		title:'Utilitaire API',
 		maximizable: false,
@@ -60,12 +62,18 @@ socket.on('log-rep', function(rep){
 	}
 });
 
+socket.on('New-Capteurs', function(data) {
+	console.log(data);
+});
+
 function createMainWindow() {
 	mainWindow = new BrowserWindow({
 		x: 400,
 		y: 200,
 		width: 1200, 
 		height: 800,
+		maxWidth: 1200,
+		maxHeight: 800,
 		icon: 'mis.png',
 		title:'Utilitaire API',
 		maximizable: false,
@@ -89,6 +97,7 @@ function createMainWindow() {
 				for(var i = 0; i<JSON.parse(data).length; i++){
 					event.sender.send("loaded-return", "<tr id='id"+ JSON.parse(data)[i].id +"'><td scope=\"row\">"+JSON.parse(data)[i].id+"</td><td scope=\"row\">"+JSON.parse(data)[i].hash.substring(0,10)+"..</td><td scope=\"row\">"+new Date(JSON.parse(data)[i].timestamp).toISOString().substring(11, 19)+' '+new Date(JSON.parse(data)[i].timestamp).toISOString().substring(2, 10)+"</td><td scope=\"row\"> <input type=\"image\" id=\"See:"+JSON.parse(data)[i].id+"\" class=\"btn btn-default\" src=\"../img/glyphicons-eye-open.png\" /> <input type=\"image\" id=\""+"Save:"+JSON.parse(data)[i].id+"\" class=\"btn btn-default\" src=\"../img/glyphicons-disk-saved.png\" /> <input type=\"image\" id=\""+"Delete:"+JSON.parse(data)[i].id+"\" class=\"btn btn-default\" src=\"../img/glyphicons-remove.png\" /> </td></tr>");
 				}
+				mainWindow.webContents.executeJavaScript("var a = document.querySelectorAll('[id^=\"id\"]');for(i = 0; i < a.length; i++){a[i].addEventListener('click', function(event) {ipcRenderer.send('event', event.target.id);})}");
 			});
 		}).on("error", (err) => {
 			console.log("Error: " + err.message);
@@ -131,7 +140,7 @@ function createMainWindow() {
 		}else if(action == "Save") {
 			console.time("dbSave");
 			console.log(Date.now());
-			https.get("https://127.0.0.1/api/util/config/"+num+"/save/", function(resp) {
+			https.get("https://127.0.0.1/api/util/config/"+num+"/use/", function(resp) {
 				let data= '';
 				resp.on('data', function(chunk) {
 					data += chunk;

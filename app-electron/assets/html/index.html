@@ -25,6 +25,9 @@
     <script src="../../node_modules/particles.js/particles.js"></script>
     <script src="../../node_modules/particles.js/demo/js/app.js"></script>
     <script>
+        particlesJS.load('particles-js', '../../particles.json', function() {
+            console.log('particles.js loaded - callback');
+        });
         var ipcRenderer = require('electron').ipcRenderer; 
         document.getElementById('send').addEventListener('click', function(){
             console.log("Activated");

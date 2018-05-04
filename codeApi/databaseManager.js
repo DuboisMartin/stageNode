@@ -1,7 +1,7 @@
 var mysql = require('mysql');
 
 var config = require('config.json')('../config.json');
-
+var that;
 function isIn(tab, data){
     for(var i = 0; i< tab.length; i++){
         if(tab[i].toString() == data.toString()){
@@ -12,6 +12,9 @@ function isIn(tab, data){
 }
 
 class databaseManager{
+    updateConfig(){
+        this.checkConfig('../config.json', that);
+    }
     checkConfig(config_path, t){
         let that = t;
         //On importe les librairies nécéssaires
@@ -126,6 +129,7 @@ class databaseManager{
     }
 
     save(data, idCapteur, callback){
+        console.log(data+" :: "+idCapteur);
         var req = "INSERT INTO "+config.bdd.table_name+" VALUES(0, '"+data+"','"+idCapteur+"', '', '', CURRENT_TIMESTAMP);";
         this.con.query(req, function(err, result){
             if(err){
@@ -185,11 +189,9 @@ class databaseManager{
         });
         this.con.query("USE "+config.bdd.bdd_name+";", function(err, res){if(err)throw err;});
         this.availableCapteurs = [];
-        var that = this;
+        that = this;
         this.checkConfig('../config.json', that)
     }
-
-
 
 };
 module.exports = databaseManager;

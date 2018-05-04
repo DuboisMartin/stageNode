@@ -3,6 +3,7 @@ const { StringDecoder } = require('string_decoder');
 
 var config = require('config.json')('../config.json');
 
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
 class Manager{
     constructor(){
@@ -28,7 +29,8 @@ class Manager{
     //Pour le code ascii d'un caractére : String.fromCharCode(data[i]).charCodeAt(0);
 
     tryJoin(){
-        request.get('http://'+config.server.server_host+'/api').on('response', function(response){ if(response.statusCode == 200) console.log("Api joignable."); else console.log("Api error"); }).on('error', function(err){ console.log("Api error") })
+        console.log('https://'+config.server.server_host+'/api');
+        request.get('https://'+config.server.server_host+'/api').on('response', function(response){ if(response.statusCode == 200) console.log("Api joignable."); else console.log("Api error");}).on('error', function(err){ console.log("Api error") })
     }
 
     addData(data){
@@ -49,7 +51,7 @@ class Manager{
 
     send(){
         var options = {
-            uri: 'https://'+config.server.server_host+'/api/001/last?raw_data='+this.getdata,
+            uri: 'https://'+config.server.server_host+'/api/003/last?raw_data='+this.getdata,
             method: 'POST'
         };
         console.log("Try sending temp");

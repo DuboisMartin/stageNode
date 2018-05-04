@@ -16,11 +16,19 @@
         "serial_baudrate": "9600"
     },
 	"capteurs": [
-        {"id":"001",
-          "alias":"temp", 
-          "description":"temperature sensor",
-          "unit":"celcius deg", 
-          "etc":"and so on"
+        {
+            "id":"001",
+            "alias":"temp", 
+            "description":"temperature sensor",
+            "unit":"celcius deg", 
+            "etc":"and so on"
+        },
+        {
+            "id": "002",
+            "alias": "bla",
+            "description": "blabla",
+            "unit": "bla",
+            "etc": "blablabla"
         },
 		"002"
 	]

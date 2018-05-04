@@ -2,6 +2,11 @@ var express = require('express');
 var db = require("./databaseManager");
 const fs = require('fs');
 
+const server = require('http').createServer();
+
+var socket_client;
+const io = require('socket.io').listen(server);
+
 var config = require('config.json')('../config.json');
 
 var hostname = 'localhost'; 
@@ -17,7 +22,7 @@ var reqNumber = 0;
 var intervalID = setInterval(function(){console.log("Nombre de requêtes reçu : " + reqNumber);}, Number(config.server.req_timer));
 
 var myRouter = express.Router(); 
-
+console.log(config.capteurs);
 dbManager.updateList(config.capteurs);
 
 //Fonction 
@@ -28,6 +33,10 @@ function isIn(tab, data){
         }
     }
     return false;
+}
+
+function ab2str(buf) {
+    return String.fromCharCode.apply(null, new Uint16Array(buf));
 }
 
 /*//region Description de la route statique
@@ -72,10 +81,10 @@ myRouter.route('/api/:capt/last')
         var c = function(data){
             res.json({message: data});
         };
-        let data = dbManager.save(req.query.raw_data, req.query.id_capteur, c);
+        let data = dbManager.save(req.query.raw_data, req.params.capt.toString(), c);
     }else{
+        newCapteurs(req.params.capt.toString());
         res.json({data: '0', error: "Ce capteur n'existe pas."});
-        //Ici envoyé alerte.
     }
 })
 //endregion
@@ -258,8 +267,35 @@ myRouter.route('/api/util/config/:id/delete')
     console.time('dbdelete');
     dbManager.justExec(c, "DELETE FROM test WHERE id ='"+req.params.id+"' ;");
 })
+
+myRouter.route('/api/util/config/:id/use')
+.get(function(req, res) {
+    var save = function(data){
+        if(data.length == 0){
+            res.json({data: '0', error: "Not in database."});
+        }else{
+            var raw_data = String(data[0].raw_data).split(',');
+            fs.writeFile('../config.json', raw_data, (err) => {
+                if (err) throw err;
+                console.log('The file has been saved!');
+                config = require('config.json')('../config.json');
+                dbManager.updateConfig();
+                res.json({data: '0', good: "Done"});
+            });
+        }
+    }
+    reqNumber++;
+    dbManager.justExec(save, "SELECT raw_data FROM test WHERE id='"+req.params.id+"' ;");
+})
+
 //
 
+function newCapteurs(capt) {
+    console.log("Nouveaux capteurs : "+capt);
+    if(socket_client != undefined){
+        socket_client.emit('New-Capteurs', capt);
+    }
+}
 
 app.use(myRouter);
 
@@ -269,11 +305,8 @@ https.createServer({
     cert: fs.readFileSync('cert.pem')
 }, app).listen(443);
 
-const server = require('http').createServer();
-
-const io = require('socket.io').listen(server);
-
 io.sockets.on('connection', function (socket) {
+    socket_client = socket;
     console.log("Un client est connecté !");
     socket.on('log', function(msg) {
         console.log(msg);

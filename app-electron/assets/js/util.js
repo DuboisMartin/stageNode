@@ -30,7 +30,6 @@ ipcRenderer.on('event-return', function(arg, data, baseReq) {
     console.log('event-return');
     document.getElementById("print")
     if(baseReq == "See"){
-        var dec = new TextDecoder("ascii");
         var raw_data = String(JSON.parse(data.substring(1, data.length-1)).raw_data.data).split(',');
         let div = document.getElementById("print");
         while (div.firstChild) {
@@ -48,10 +47,21 @@ ipcRenderer.on('event-return', function(arg, data, baseReq) {
     }
 })
 
-window.onload= function(){
+window.onload= function() {
     ipcRenderer.send('loaded');
 }
 
-document.addEventListener('click', function(event) {
-    ipcRenderer.send('event', event.target.id);
-});
+document.getElementById("navConfiguration").addEventListener("click", function(){
+    document.getElementById("navCapteurs").classList.remove("active");
+    document.getElementById("navConfiguration").classList.add("active");
+    document.getElementById("Conf").style.display = "block";
+    document.getElementById("Capteurs").style.display = "none";
+})
+
+document.getElementById("navCapteurs").addEventListener("click", function(){
+    document.getElementById("navCapteurs").classList.add("active");
+    document.getElementById("navConfiguration").classList.remove("active");
+    document.getElementById("Conf").style.display = "none";
+    document.getElementById("Capteurs").style.display = "block";
+
+})

@@ -1,9 +1,6 @@
 const Manager = require('./ManagerPost.js');
 
-require('dotenv').config({path: '../config.env'});
 var config = require('config.json')('../config.json');
-
-
 var serialport = require("serialport");
 var SerialPort = serialport.SerialPort;
 var Main = new Manager();

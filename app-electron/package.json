@@ -6,7 +6,14 @@
     "start": "electron .",
     "electron": "electron ."
   },
+  "Dependencies": {
+    "bootstrap": "^4.1.1",
+    "particles.js": "^2.0.0",
+    "socket.io-client": "^2.1.0"
+  },
   "devDependencies": {
-    "electron": "^1.8.6"
+    "bootstrap": "^4.1.1",
+    "particles.js": "^2.0.0",
+    "socket.io-client": "^2.1.0"
   }
 }
