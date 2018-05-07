@@ -14,6 +14,7 @@ function isIn(tab, data){
 class databaseManager{
     updateConfig(){
         this.checkConfig('../config.json', that);
+        config = require('config.json')('../config.json');
     }
     checkConfig(config_path, t){
         let that = t;
@@ -46,13 +47,20 @@ class databaseManager{
                     let file_hash = hash.digest('hex');
                     
                     //On recupére le dernier hash dans la base;
-                    var req= "SELECT hash FROM test ORDER BY id DESC LIMIT 1;"
+                    var req= "SELECT hash FROM test ORDER BY id;"
                     t.con.query(req, function(e, d){
                         if(d.length > 0){
                             if(e)throw e;
                             //On compare les hash
-                            if(d[0].hash == file_hash){
-                            }else{
+                            var bool = false;
+                            for(var i = 0; i < d.length; i++){
+                                if(d[i].hash == file_hash){
+                                    bool = true;
+                                    t.con.query("UPDATE test SET used = FALSE WHERE 1;")
+                                    t.con.query("UPDATE test SET used = TRUE WHERE hash = '"+file_hash+"';")
+                                }
+                            }
+                            if(!bool){
                                 t.saveConfig(config_path, t);
                             }
                         }else{

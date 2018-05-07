@@ -1,17 +1,21 @@
 # stageNode
 
-### Dépendance nodejs : 
+### Dépendances nodejs : 
 
-####       -express(codeApi)
+####       -express
 
-####       -serialport(codeCapteur)
+####       -serialport
 
-####       -mysql(codeApi)
+####       -mysql
 
-####       -body-parser(codeApi)
+####       -body-parser
 
-####       -moment(codeApi)
+####       -moment
 
-####       -moment-timezone(codeApi)
+####       -moment-timezone
 
-####       -config.json(Tout)
+####       -config.json
+
+####       -socket.io
+
+####       -socket.io-client

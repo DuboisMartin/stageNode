@@ -53,8 +53,48 @@
                     <div class="alert alert-info">
                         <strong>Info!</strong> Vous pouvez gérer les capteurs ici.
                     </div>
-                    <div class="row">
-
+                    <div id="divCapteursList">
+                        <table class="table table-hover">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th scope="col">Id</th>
+                                    <th scope="col">Alias</th>
+                                    <th scope="col">Description</th>
+                                    <th scope="col">Unit</th>
+                                    <th scope="col">etc..</th>
+                                </tr>
+                            </thead>
+                            <tbody id="bodyCapteur" class="overflow">
+                                
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="divCapteursNew">
+                        <form class="m-5">
+                            <div class="form-group">
+                                <label for="idSelect">Selectionner un des capteurs disponible:</label>
+                                <select class="form-control" id="idSelect">
+                                    <option>No capteur available</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="inputAlias">Alias</label>
+                                <input type="text" class="form-control" id="inputAlias" placeholder="Entrer un alias pour ce capteur">
+                            </div>
+                            <div class="form-group">
+                                <label for="inputDescription">Description</label>
+                                <input type="text" class="form-control" id="inputDescription" placeholder="Description du capteur">
+                            </div>
+                            <div class="form-group">
+                                <label for="inputUnit">Unitée</label>
+                                <input type="text" class="form-control" id="inputUnit" placeholder="Unité de la donnée mesurée par ce capteur">
+                            </div>
+                            <div class="form-group">
+                                <label for="inputEtc">Etc</label>
+                                <input type="text" class="form-control" id="inputEtc" placeholder="Commentaire supplémentaire">
+                            </div>
+                            <input class="btn btn-primary" type="button" value="Ajouter">
+                        </form>
                     </div>
                 </div>
             </div>

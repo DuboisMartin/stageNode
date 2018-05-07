@@ -21,9 +21,15 @@ var app = express();
 var reqNumber = 0;
 var intervalID = setInterval(function(){console.log("Nombre de requêtes reçu : " + reqNumber);}, Number(config.server.req_timer));
 
-var myRouter = express.Router(); 
-console.log(config.capteurs);
-dbManager.updateList(config.capteurs);
+var myRouter = express.Router();
+var list = new Array();
+for(var i = 0; i< config.capteurs.length; i++){
+    if(config.capteurs[i].id != undefined){
+        list.push(config.capteurs[i].id);
+    }
+}
+console.log(list);
+dbManager.updateList(list);
 
 //Fonction 
 function isIn(tab, data){
@@ -231,7 +237,20 @@ myRouter.route('/api/util/config')
         }
     };
     reqNumber++;
-    dbManager.justExec(c, "SELECT id, hash, timestamp FROM test;");
+    dbManager.justExec(c, "SELECT id, hash, timestamp, used FROM test;");
+});
+
+myRouter.route('/api/util/config/current')
+.get(function(req, res) {
+    var c = function(data) {
+        if(data.length == 0){
+            res.json({data: '0', error: "No data."});
+        }else{
+            res.json(data);
+        }
+    };
+    reqNumber++;
+    dbManager.justExec(c, "SELECT * FROM test WHERE used = true;");
 });
 
 myRouter.route('/api/util/config/:id')
@@ -247,7 +266,7 @@ myRouter.route('/api/util/config/:id')
     console.log(Date.now());
     reqNumber++;
     console.time('dbneed');
-    dbManager.justExec(c, "SELECT id, raw_data FROM test where id = '"+req.params.id+"' ;");
+    dbManager.justExec(c, "SELECT id, raw_data, used FROM test where id = '"+req.params.id+"' ;");
 
 });
 

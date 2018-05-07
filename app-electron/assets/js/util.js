@@ -3,6 +3,10 @@ ipcRenderer.on('loaded-return', function(arg, data) {
     document.getElementById('bod').insertAdjacentHTML('beforeend', data);
 });
 
+ipcRenderer.on("SeeCapteurs-return", function(arg, data) {
+    document.getElementById("bodyCapteur").insertAdjacentHTML('beforeend', data);
+});
+
 function ab2str(buf) {
     return String.fromCharCode.apply(null, new Uint16Array(buf));
 }
@@ -28,7 +32,6 @@ function syntaxHighlight(json) {
 
 ipcRenderer.on('event-return', function(arg, data, baseReq) {
     console.log('event-return');
-    document.getElementById("print")
     if(baseReq == "See"){
         var raw_data = String(JSON.parse(data.substring(1, data.length-1)).raw_data.data).split(',');
         let div = document.getElementById("print");
@@ -63,5 +66,23 @@ document.getElementById("navCapteurs").addEventListener("click", function(){
     document.getElementById("navConfiguration").classList.remove("active");
     document.getElementById("Conf").style.display = "none";
     document.getElementById("Capteurs").style.display = "block";
+    document.getElementById("bodyCapteur").innerHTML = "";
+    ipcRenderer.send("SeeCapteurs");
 
+})
+
+document.getElementById("navCapteursList").addEventListener("click", function(){
+    document.getElementById("navCapteursList").classList.add("active");
+    document.getElementById("navCapteursNew").classList.remove("active");
+    document.getElementById("divCapteursList").style.display = "block";
+    document.getElementById("divCapteursNew").style.display = "none";
+    document.getElementById("bodyCapteur").innerHTML = "";
+    ipcRenderer.send("SeeCapteurs");
+})
+
+document.getElementById("navCapteursNew").addEventListener("click", function(){
+    document.getElementById("navCapteursList").classList.remove("active");
+    document.getElementById("navCapteursNew").classList.add("active");
+    document.getElementById("divCapteursList").style.display = "none";
+    document.getElementById("divCapteursNew").style.display = "block";
 })

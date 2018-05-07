@@ -49,3 +49,7 @@ canvas{
 #Capteurs{
     display: none;
 }
+
+#divCapteursNew{
+    display:none;
+}
