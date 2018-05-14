@@ -9,7 +9,7 @@ ipcRenderer.on("SeeCapteurs-return", function(arg, data) {
 
 function ab2str(buf) {
     return String.fromCharCode.apply(null, new Uint16Array(buf));
-}
+};
 
 function syntaxHighlight(json) {
     json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -28,7 +28,7 @@ function syntaxHighlight(json) {
         }
         return '<span class="' + cls + '">' + match + '</span>';
     });
-}
+};
 
 ipcRenderer.on('event-return', function(arg, data, baseReq) {
     console.log('event-return');
@@ -48,18 +48,18 @@ ipcRenderer.on('event-return', function(arg, data, baseReq) {
             body: 'Deleted!'
           });
     }
-})
+});
 
 window.onload= function() {
     ipcRenderer.send('loaded');
-}
+};
 
 document.getElementById("navConfiguration").addEventListener("click", function(){
     document.getElementById("navCapteurs").classList.remove("active");
     document.getElementById("navConfiguration").classList.add("active");
     document.getElementById("Conf").style.display = "block";
     document.getElementById("Capteurs").style.display = "none";
-})
+});
 
 document.getElementById("navCapteurs").addEventListener("click", function(){
     document.getElementById("navCapteurs").classList.add("active");
@@ -69,7 +69,7 @@ document.getElementById("navCapteurs").addEventListener("click", function(){
     document.getElementById("bodyCapteur").innerHTML = "";
     ipcRenderer.send("SeeCapteurs");
 
-})
+});
 
 document.getElementById("navCapteursList").addEventListener("click", function(){
     document.getElementById("navCapteursList").classList.add("active");
@@ -78,11 +78,23 @@ document.getElementById("navCapteursList").addEventListener("click", function(){
     document.getElementById("divCapteursNew").style.display = "none";
     document.getElementById("bodyCapteur").innerHTML = "";
     ipcRenderer.send("SeeCapteurs");
-})
+});
 
 document.getElementById("navCapteursNew").addEventListener("click", function(){
     document.getElementById("navCapteursList").classList.remove("active");
     document.getElementById("navCapteursNew").classList.add("active");
     document.getElementById("divCapteursList").style.display = "none";
     document.getElementById("divCapteursNew").style.display = "block";
-})
+});
+
+document.getElementById("validCapteur").addEventListener("click", function() {
+    var id = document.getElementById("idSelect").value;
+    if(id != "." && id != undefined){
+        var alias = document.getElementById("inputAlias").value;
+        var desc = document.getElementById("inputDescription").value;
+        var unit = document.getElementById("inputUnit").value;
+        var etc = document.getElementById("inputEtc").value;
+        console.log(id+":"+alias+":"+desc+":"+unit+":"+etc);
+        ipcRenderer.send("validCapteur", String(id+":"+alias+":"+desc+":"+unit+":"+etc));
+    }
+});

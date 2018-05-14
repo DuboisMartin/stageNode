@@ -22,16 +22,21 @@ var reqNumber = 0;
 var intervalID = setInterval(function(){console.log("Nombre de requêtes reçu : " + reqNumber);}, Number(config.server.req_timer));
 
 var myRouter = express.Router();
-var list = new Array();
-for(var i = 0; i< config.capteurs.length; i++){
-    if(config.capteurs[i].id != undefined){
-        list.push(config.capteurs[i].id);
-    }
-}
-console.log(list);
-dbManager.updateList(list);
+
+
 
 //Fonction 
+
+function makelist(){
+    var list = new Array();
+    for(var i = 0; i< config.capteurs.length; i++){
+        if(config.capteurs[i].id != undefined){
+            list.push(config.capteurs[i].id);
+        }
+    }
+    return list;
+}
+
 function isIn(tab, data){
     for(var i = 0; i< tab.length; i++){
         if(tab[i].toString() == data.toString()){
@@ -44,6 +49,8 @@ function isIn(tab, data){
 function ab2str(buf) {
     return String.fromCharCode.apply(null, new Uint16Array(buf));
 }
+
+dbManager.updateList(makelist());
 
 /*//region Description de la route statique
 myRouter.route('/').get(function(req, res){ res.sendFile(__dirname+'/static/index.html');});
@@ -299,6 +306,7 @@ myRouter.route('/api/util/config/:id/use')
                 console.log('The file has been saved!');
                 config = require('config.json')('../config.json');
                 dbManager.updateConfig();
+                dbManager.updateList(makelist());
                 res.json({data: '0', good: "Done"});
             });
         }
@@ -307,6 +315,26 @@ myRouter.route('/api/util/config/:id/use')
     dbManager.justExec(save, "SELECT raw_data FROM test WHERE id='"+req.params.id+"' ;");
 })
 
+myRouter.route('/api/util/config/new')
+.post(function(req, res) {
+    reqNumber++;
+    var old = require('../config.json')
+    old.capteurs[old.capteurs.length] = {
+        "id": req.query.raw_data.split(':')[0],
+        "alias": req.query.raw_data.split(':')[1],
+        "description": req.query.raw_data.split(':')[2],
+        "unit": req.query.raw_data.split(':')[3],
+        "etc": req.query.raw_data.split(':')[4]
+    }
+    fs.writeFile('../config.json', JSON.stringify(old, null, '\t'), 'utf-8', function callback(err){
+        if (err) throw err;
+        config = require('config.json')('../config.json');
+        dbManager.updateConfig();
+        dbManager.updateList(makelist());
+        res.json({message: 'OK.'})
+    });
+
+});
 //
 
 function newCapteurs(capt) {
@@ -314,7 +342,7 @@ function newCapteurs(capt) {
     if(socket_client != undefined){
         socket_client.emit('New-Capteurs', capt);
     }
-}
+};
 
 app.use(myRouter);
 

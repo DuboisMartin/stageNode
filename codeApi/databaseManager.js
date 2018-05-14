@@ -102,12 +102,14 @@ class databaseManager{
                 //On calcul son hash
                 hash.update(buffer);
                 let file_hash = hash.digest('hex');
+                that.con.query("UPDATE test SET used = FALSE WHERE 1;");
                 //Si le hash est différent on sauvegarde la nouvelle config
                 var query = "INSERT INTO test SET ?",
                     values = {
                         id: 0,
                         raw_data: buffer,
-                        hash: file_hash
+                        hash: file_hash,
+                        used: true
                     };
                 that.con.query(query, values, function (er, da) {
                     if(er)throw er;
@@ -118,22 +120,10 @@ class databaseManager{
     
     
     }
-    
-    newCapteur(config_path, id_capteur){
-        let fs = require('fs');
-        fs.readFile(config_path, function(err, data){
-            if(err)throw err;
-            jsonConfig = JSON.parse(data);
-            if(!isIn(jsonConfig.capteurs, id_capteur)){
-                jsonConfig.capteurs[jsonConfig.capteurs.length] = id_capteur;
-                fs.writeFile(config_path, JSON.stringify(jsonConfig, null, '\t'), 'utf-8');
-                saveConfig(config_path);
-            }
-        });
-    }
 
     updateList(list){
         this.availableCapteurs = list;
+        console.log(list); 
     }
 
     save(data, idCapteur, callback){
@@ -200,6 +190,7 @@ class databaseManager{
         that = this;
         this.checkConfig('../config.json', that)
     }
+
 
 };
 module.exports = databaseManager;

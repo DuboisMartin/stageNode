@@ -54,7 +54,7 @@
     },
     "move": {
       "enable": true,
-      "speed": 0.5,
+      "speed": 1,
       "direction": "none",
       "random": true,
       "straight": false,
@@ -71,8 +71,8 @@
     "detect_on": "window",
     "events": {
       "onhover": {
-        "enable": false,
-        "mode": "repulse"
+        "enable": true,
+        "mode": "grab"
       },
       "onclick": {
         "enable": false,
@@ -82,14 +82,14 @@
     },
     "modes": {
       "grab": {
-        "distance": 400,
+        "distance": 200,
         "line_linked": {
-          "opacity": 1
+          "opacity": 0.3
         }
       },
       "bubble": {
-        "distance": 50,
-        "size": 10,
+        "distance": 15,
+        "size": 5,
         "duration": 2,
         "opacity": 8,
         "speed": 3

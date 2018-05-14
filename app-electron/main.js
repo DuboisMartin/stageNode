@@ -5,6 +5,7 @@ const Tray = electron.Tray;
 var ipcMain = require('electron').ipcMain;
 const socket = require('socket.io-client')('http://127.0.0.1:3000');
 const https = require('https');
+const querystring = require('querystring');
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
@@ -63,7 +64,8 @@ socket.on('log-rep', function(rep){
 });
 
 socket.on('New-Capteurs', function(data) {
-	mainWindow.webContents.executeJavaScript("let myNotification = new Notification('Nouveaux capteur !', {body: 'Un nouveaux capteurs a était détecter!'}); if(document.getElementById('idSelect').options.length){document.getElementById('idSelect').insertAdjacentHTML('beforeend','<option>"+data+"</option>')}");
+	console.log("New capteurs.")
+	mainWindow.webContents.executeJavaScript("new Notification('Nouveaux capteur !', {body: 'Un nouveaux capteurs a était détecter!'});var x = document.getElementById('idSelect'); var bool = false;for(var i = 0; i<x.options.length; i++){if(x.options[i].value == '"+data+"'){bool = true;}}if(!bool){var y = document.createElement('option');y.text = '"+data+"';y.selected='selected';x.add(y);}");
 });
 
 function createMainWindow() {
@@ -116,15 +118,6 @@ function createMainWindow() {
 		let action = arg.split(':')[0];
 		let num = arg.split(':')[1];
 
-		/*electron.dialog.showMessageBox({
-			type: 'warning',
-			title: 'Suppression',
-			message: 'Etes-vous sur de vouloir supprimé cette configuration définitivement ?',
-			buttons: ['Oui', 'Non']
-		}, function(index){
-			console.log(index);
-		});*/
-
 		if(action == "See") {
 			console.time("dbneed");
 			console.log(Date.now());
@@ -159,19 +152,28 @@ function createMainWindow() {
 		}else if(action == "Delete") {
 			console.time("dbDelete");
 			console.log(Date.now());
-			https.get("https://127.0.0.1/api/util/config/"+num+"/delete/", function(resp) {
-				let data = '';
-				resp.on('data', function(chunk) {
-					data += chunk;
-				}),
-				resp.on('end', function() {
-					console.timeEnd("dbDelete");
-					event.sender.send('event-return', data, "Delete");
-					mainWindow.webContents.executeJavaScript("document.getElementById(\"id"+num+"\").remove()");
-				});
-			}).on("error", (err) => {
-				console.log("Error: " + err.message);
+			var choice = electron.dialog.showMessageBox(mainWindow, {
+				type: 'question',
+				buttons: ['Oui', 'Non'],
+				title: 'Confirm',
+				message: 'Voulez vous vraiment supprimé cette configuration ?'
 			});
+			console.log(choice);
+			if(choice == 0){
+				https.get("https://127.0.0.1/api/util/config/"+num+"/delete/", function(resp) {
+					let data = '';
+					resp.on('data', function(chunk) {
+						data += chunk;
+					}),
+					resp.on('end', function() {
+						console.timeEnd("dbDelete");
+						event.sender.send('event-return', data, "Delete");
+						mainWindow.webContents.executeJavaScript("document.getElementById(\"id"+num+"\").remove()");
+					});
+				}).on("error", (err) => {
+					console.log("Error: " + err.message);
+				});
+			}
 		}
 	});
 
@@ -180,7 +182,6 @@ function createMainWindow() {
 	}
 	
 	ipcMain.on('SeeCapteurs', function(event, arg) {
-		console.log(":");
 		https.get("https://127.0.0.1/api/util/config/current", function(resp) {
 			let data = '';
 			resp.on('data', function(chunk) {
@@ -199,4 +200,27 @@ function createMainWindow() {
 			console.log("Error: " + err.message);
 		});
 	});
+
+	ipcMain.on('validCapteur', function(event, arg) {
+		var options = {
+			hostname: '127.0.0.1',
+			path: 443,
+			path: '/api/util/config/new?raw_data='+arg,
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/x-www-form-urlencoded',
+				'Content-Length': 0
+			}
+		};
+		var req = https.request(options, (res) => {
+			
+			res.on('data', (d) => {
+				console.log(d);
+			});
+			res.on('error', (e) => {
+				console.log("https error: "+e);
+			});
+		})
+		req.end();
+	})
 }
