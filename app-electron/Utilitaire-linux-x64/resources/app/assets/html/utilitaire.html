@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="../css/utilitaire.css">
+        <link rel="stylesheet" href="../../node_modules/bootstrap/dist/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
+    </head>
+    <body>
+        <nav class="nav nav-pills nav-justified">
+            <a id="navConfiguration" class="nav-item nav-link active" href="#Configuration">Configuration</a>
+            <a id="navCapteurs" class="nav-item nav-link" href="#Capteurs">Capteurs</a>
+        </nav>
+        <div>
+            <div id="particles-js"></div>
+            <div id="Conf" class="container-fluid supp p-2">
+                <div class="col-md-12">
+                    <div class="alert alert-info">
+                        <strong>Info!</strong> Vous pouvez gérer la configuration de l'api ici.
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div id="print">
+
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <table class="table table-hover">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th scope="col">Id</th>
+                                        <th scope="col">Hash</th>
+                                        <th scope="col">Timestamp</th>
+                                        <th scope="col">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="bod" class="overflow">
+                                    
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="Capteurs" class="container-fluid supp p-2" >
+                <nav class="nav nav-pills nav-justified mb-2 mx-3">
+                    <a id="navCapteursList" class="nav-item nav-link active" href="#Configuration">Liste des capteurs</a>
+                    <a id="navCapteursNew" class="nav-item nav-link" href="#Capteurs">Nouveaux capteurs</a>
+                </nav>
+                
+                <div class="col-md-12">
+                    <div class="alert alert-info">
+                        <strong>Info!</strong> Vous pouvez gérer les capteurs ici.
+                    </div>
+                    <div id="divCapteursList">
+                        <table class="table table-hover">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th scope="col">Id</th>
+                                    <th scope="col">Alias</th>
+                                    <th scope="col">Description</th>
+                                    <th scope="col">Unit</th>
+                                    <th scope="col">etc..</th>
+                                </tr>
+                            </thead>
+                            <tbody id="bodyCapteur" class="overflow">
+                                
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="divCapteursNew">
+                        <form class="m-5">
+                            <div class="form-group">
+                                <label for="idSelect">Selectionner un des capteurs disponible:</label>
+                                <select class="form-control" id="idSelect">
+                                    <option>.</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="inputAlias">Alias</label>
+                                <input type="text" class="form-control" id="inputAlias" placeholder="Entrer un alias pour ce capteur">
+                            </div>
+                            <div class="form-group">
+                                <label for="inputDescription">Description</label>
+                                <input type="text" class="form-control" id="inputDescription" placeholder="Description du capteur">
+                            </div>
+                            <div class="form-group">
+                                <label for="inputUnit">Unitée</label>
+                                <input type="text" class="form-control" id="inputUnit" placeholder="Unité de la donnée mesurée par ce capteur">
+                            </div>
+                            <div class="form-group">
+                                <label for="inputEtc">Etc</label>
+                                <input type="text" class="form-control" id="inputEtc" placeholder="Commentaire supplémentaire">
+                            </div>
+                            <input class="btn btn-primary" type="button" value="Ajouter" id="validCapteur">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+    <script src="../js/util.js"></script>
+    <script src="../../node_modules/particles.js/particles.js"></script>
+    <script src="../../node_modules/particles.js/demo/js/app.js"></script>
+    <script>
+        particlesJS.load('particles-js', '../../particles.json', function() {
+            console.log('particles.js loaded - callback');
+        });
+    </script>
+</html>

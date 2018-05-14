@@ -8,7 +8,7 @@ $.get("https://localhost/api/001/0-100", function( data ){
     var test = {};
     test.labels = [];
     test.datasets=[{}];
-    test.datasets[0].labels =  'Température';
+    test.datasets[0].label =  'Température';
     test.datasets[0].borderColor = "rgba(255, 0, 0, 1)";
     test.datasets[0].borderWidth = 2;
     test.datasets[0].fill = false;

@@ -74,13 +74,11 @@ function createMainWindow() {
 		y: 200,
 		width: 1200, 
 		height: 800,
-		maxWidth: 1200,
-		maxHeight: 800,
 		icon: 'mis.png',
 		title:'Utilitaire API',
-		maximizable: false,
-		fullscreenable: false,
-		resizable: false
+		fullscreen: true,
+		resizable: true,
+		maximizable: true
 	});
 
 	mainWindow.loadURL('file:'+__dirname+'/assets/html/utilitaire.html');
