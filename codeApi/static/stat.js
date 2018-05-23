@@ -118,7 +118,7 @@ document.getElementsByName('backColor').forEach((element) => {
 document.getElementsByName('lineColor').forEach((element) => {
     element.addEventListener('click', function(){
         if(document.querySelector("[name='lineColor']:checked").value == "Red"){
-            
+            console.log(StatChart.config.data.datasets[0].borderColor[0]);
         }else if(document.querySelector("[name='lineColor']:checked").value == "Blue"){
 
         }else if(document.querySelector("[name='lineColor']:checked").value == "Yellow"){
