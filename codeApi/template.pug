@@ -1,0 +1,100 @@
+<div class="choice">
+            div(id="accordion")
+                each val in tab
+                    div(class="card")
+                        div(class="card-header" id="heading"+val)
+                            h5(class="mb-0")
+                                button(class="btn btn-link" data-toggle="collapse" data-target="#collapse"+val aria-expended="true" aria-controls="collapseOne")
+                                    | Id#{val}
+                        div(id="collapse"+val class="collapse" aria-labelledby="heading"+val data-parent="#accordion")
+                            div(class="card-body")
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="activate#{val}" id="defaultCheck#{val}">
+                                    <label class="form-check-label" for="defaultCheck#{val}">Activé</label>
+                                </div>
+                                <div class="form-group border border-info">
+                                    <div class="radio">
+                                        <label><input type="radio" name="option#{val}" value='Moyenne' checked>Moyenne</label>
+                                    </div>
+                                    <div class="radio">
+                                        <label><input type="radio" name="option#{val}" value='Max'>Max</label>
+                                    </div>
+                                    <div class="radio">
+                                        <label><input type="radio" name="option#{val}" value='Min'>Min</label>
+                                    </div>
+                                    <div class="radio">
+                                        <label><input type="radio" name="option#{val}" value='onYear'>Valeur sur une durée</label>
+                                    </div>
+                                    <div class="radio">
+                                        <label><input type="radio" name="option#{val}" value='Ecart_type'>Ecart type</label>
+                                    </div>
+                                    <div class="radio">
+                                        <label><input type="radio" name="option#{val}" value='Variance'>Variance</label>
+                                    </div>
+                                    <div class="radio">
+                                        <label><input type="radio" name="option#{val}" value='Skewness'>Skewness</label>
+                                    </div>
+                                </div>    
+                                <div class="form-group border border-info">
+                                    <div class="radio">
+                                        <label><input type="radio" name="freq#{val}" value="all" checked>Toute les mesures</label>
+                                    </div>
+                                    <div class="radio">
+                                        <label><input type="radio" name="freq#{val}" value="day">Chaque jour</label>
+                                    </div>
+                                    <div class="radio">
+                                        <label><input type="radio" name="freq#{val}" value="month">Chaque mois</label>
+                                    </div>
+                                    <div class="radio">
+                                        <label><input type="radio" name="freq#{val}" value="year" >Chaque année</label>
+                                    </div>
+                                </div>
+
+
+
+</div>
+<div class="content container">
+    <div class="card">
+        <div class="card-header text-center">Statistique</div>
+        <div class="card-body">
+            <canvas id="GraphStat"></canvas>
+        </div>
+    </div>
+</div>
+<div class="choice-right">
+    <div class="form-group border border-info">
+        <div class="radio">
+            <label><input type="radio" name="time" value="day">Sur un jours</label>
+        </div>
+        <div class="radio">
+            <label><input type="radio" name="time" value="month" checked>Sur un mois</label>
+        </div>
+        <div class="radio">
+            <label><input type="radio" name="time" value="year">Sur un ans</label>
+        </div>
+    </div>
+    <div class="form-group border border-info">
+        <div class="radio">
+            <label><input type="radio" name="backColor" value="Dark"><div class="color-box" style="background-color: #1a1a1a;"></div> Fond noir</label>
+        </div>
+        <div class="radio">
+            <label><input type="radio" name="backColor" value="Gray" checked><div class="color-box" style="background-color: #f7f7f7;"></div> Fond gris</label>
+        </div>
+        <div class="radio">
+            <label><input type="radio" name="backColor" value="White"><div class="color-box" style="background-color: #ffffff;"></div> Fond blanc</label>
+        </div>
+    </div>    
+    <div class="form-group border border-info">
+        <div class="radio">
+            <label><input type="radio" name="lineColor" value="Red" checked><div class="color-box" style="background-color: #ff6384;"></div> Trait rouge</label>
+        </div>
+        <div class="radio">
+            <label><input type="radio" name="lineColor" value="Blue"><div class="color-box" style="background-color: #36a2eb;"></div> Trait bleu</label>
+        </div>
+        <div class="radio">
+            <label><input type="radio" name="lineColor" value="Yellow"><div class="color-box" style="background-color: #ffcd56;"></div> Trait jaune</label>
+        </div>
+    </div>
+    <button type="button" class="btn btn-outline-info btn-block" name="LoadStat">Load</button>
+</div>
+<script src="stat.js"></script>

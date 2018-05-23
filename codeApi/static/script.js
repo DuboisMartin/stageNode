@@ -11,6 +11,9 @@ function whenHashChange(){
         $("#conteneur").empty();
     }else if(window.location.hash == "#Precipitation"){
         $("#conteneur").empty();
+    }else if(window.location.hash == "#Statistique"){
+        $("#conteneur").empty();
+        $("#conteneur").load("contenuStat.html");
     }
 }
 whenHashChange();

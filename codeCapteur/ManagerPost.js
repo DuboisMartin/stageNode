@@ -51,7 +51,7 @@ class Manager{
 
     send(){
         var options = {
-            uri: 'https://'+config.server.server_host+'/api/004/last?raw_data='+this.getdata,
+            uri: 'https://'+config.server.server_host+'/api/006/last?raw_data='+this.getdata,
             method: 'POST'
         };
         console.log("Try sending temp");

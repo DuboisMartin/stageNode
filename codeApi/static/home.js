@@ -9,7 +9,7 @@ var temp = document.getElementById("tempChart");
                         "fill": false,
                         borderWidth: 1,
                         borderColor: [
-                            'rgb(183, 28, 28)'
+                            '#ff6384'
                         ]
                     }]
                 },
@@ -34,7 +34,7 @@ var temp = document.getElementById("tempChart");
                         "fill": false,
                         borderWidth: 1,
                         borderColor: [
-                            'rgb(183, 28, 28)'
+                            '#ff6384'
                         ]
                     }]
                 },
@@ -58,7 +58,7 @@ var temp = document.getElementById("tempChart");
                         "fill": false,
                         borderWidth: 1,
                         borderColor: [
-                            'rgb(183, 28, 28)'
+                            '#ff6384'
                         ]
                     }]
                 },
@@ -76,7 +76,7 @@ var temp = document.getElementById("tempChart");
                         "fill": false,
                         borderWidth: 1,
                         borderColor: [
-                            'rgb(183, 28, 28)'
+                            '#ff6384'
                         ]
                     }]
                 },
@@ -94,7 +94,7 @@ var temp = document.getElementById("tempChart");
                         "fill": false,
                         borderWidth: 1,
                         borderColor: [
-                            'rgb(183, 28, 28)'
+                            '#ff6384'
                         ]
                     }]
                 },
@@ -111,7 +111,7 @@ var temp = document.getElementById("tempChart");
                         data: [8, 2, 7, 6, 3, 9, 5],
                         borderWidth: 1,
                         borderColor: [
-                            'rgb(183, 28, 28)'
+                            '#ff6384'
                         ]
                     }]
                 },

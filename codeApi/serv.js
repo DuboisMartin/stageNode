@@ -1,7 +1,8 @@
 var express = require('express'); 
 var db = require("./databaseManager");
 const fs = require('fs');
-
+var stat = require('../codeEntrainement/stat.js');
+stat.skewness = require('compute-skewness');
 const server = require('http').createServer();
 
 var socket_client;
@@ -17,6 +18,10 @@ var moment_timezone = require('moment-timezone');
 var moment = require('moment');
 
 var app = express(); 
+
+const pug = require('pug');
+const compiledFunction = pug.compileFile('template.pug');
+app.set('view engine', 'pug');
 
 var reqNumber = 0;
 var intervalID = setInterval(function(){console.log("Nombre de requêtes reçu : " + reqNumber);}, Number(config.server.req_timer));
@@ -71,6 +76,10 @@ fs.readdir('static/', (err, files) => {
         }
     });
 })
+
+app.get('/contenuStat.html', function(req, res) {
+    res.render('../template', {tab: dbManager.availableCapteurs});
+});
 
 myRouter.route('/api').get(function(req, res){ reqNumber ++; res.json({data : "Hello world!"}); });
 
@@ -220,6 +229,87 @@ myRouter.route('/api/:capt/max/:number-:e')
                     if(Number(data[i].data) > max) max = Number(data[i].data);
                 }
                 res.json({data: max});
+            }
+        };
+        reqNumber++;
+        if( isNaN(Number(req.params.number)) || !(req.params.e in {sec: '', min: '', hour: '', day: '', month: '', year: ''}) ){
+            res.json({data: '0', error: "Error in params sended."});
+        }else{
+            dbManager.justExec(c, "SELECT id, data FROM "+config.bdd.table_name+" WHERE id_capteur ='"+ req.params.capt +"' AND timestamp BETWEEN '"+moment_timezone().tz("Europe/Paris").subtract(Number(req.params.number), req.params.e).format("YYYY-MM-DD HH:mm:ss")+"' AND '"+moment_timezone().tz("Europe/Paris").format("YYYY-MM-DD HH:mm:ss")+"';");
+        }
+    }else{
+        res.json({data: '0', error: "Ce capteur n'existe pas."});
+    }
+});
+
+myRouter.route('/api/:capt/variance/:number-:e')
+.get(function(req, res){
+    if(isIn(dbManager.availableCapteurs, req.params.capt.toString())){
+        var c = function(data){
+            if(data.length == 0){
+                res.json({data: '0', error: "No data."});
+            }else{
+                var tab = new Array();
+                for(var i = 0; i < data.length; i++){
+                    tab.push(Number(data[i].data));
+                }
+                var variance = stat.variance(tab);
+                console.log(tab);
+                res.json({data: variance});
+            }
+        };
+        reqNumber++;
+        if( isNaN(Number(req.params.number)) || !(req.params.e in {sec: '', min: '', hour: '', day: '', month: '', year: ''}) ){
+            res.json({data: '0', error: "Error in params sended."});
+        }else{
+            dbManager.justExec(c, "SELECT id, data FROM "+config.bdd.table_name+" WHERE id_capteur ='"+ req.params.capt +"' AND timestamp BETWEEN '"+moment_timezone().tz("Europe/Paris").subtract(Number(req.params.number), req.params.e).format("YYYY-MM-DD HH:mm:ss")+"' AND '"+moment_timezone().tz("Europe/Paris").format("YYYY-MM-DD HH:mm:ss")+"';");
+        }
+    }else{
+        res.json({data: '0', error: "Ce capteur n'existe pas."});
+    }
+});
+
+myRouter.route('/api/:capt/ecart/:number-:e')
+.get(function(req, res){
+    if(isIn(dbManager.availableCapteurs, req.params.capt.toString())){
+        var c = function(data){
+            if(data.length == 0){
+                res.json({data: '0', error: "No data."});
+            }else{
+                var tab = new Array();
+                for(var i = 0; i < data.length; i++){
+                    tab.push(Number(data[i].data));
+                }
+                var ecart = stat.standardDeviation(tab);
+                console.log(tab);
+                res.json({data: ecart});
+            }
+        };
+        reqNumber++;
+        if( isNaN(Number(req.params.number)) || !(req.params.e in {sec: '', min: '', hour: '', day: '', month: '', year: ''}) ){
+            res.json({data: '0', error: "Error in params sended."});
+        }else{
+            dbManager.justExec(c, "SELECT id, data FROM "+config.bdd.table_name+" WHERE id_capteur ='"+ req.params.capt +"' AND timestamp BETWEEN '"+moment_timezone().tz("Europe/Paris").subtract(Number(req.params.number), req.params.e).format("YYYY-MM-DD HH:mm:ss")+"' AND '"+moment_timezone().tz("Europe/Paris").format("YYYY-MM-DD HH:mm:ss")+"';");
+        }
+    }else{
+        res.json({data: '0', error: "Ce capteur n'existe pas."});
+    }
+});
+
+myRouter.route('/api/:capt/skewness/:number-:e')
+.get(function(req, res){
+    if(isIn(dbManager.availableCapteurs, req.params.capt.toString())){
+        var c = function(data){
+            if(data.length == 0){
+                res.json({data: '0', error: "No data."});
+            }else{
+                var tab = new Array();
+                for(var i = 0; i < data.length; i++){
+                    tab.push(Number(data[i].data));
+                }
+                var ecart = stat.skewness(tab);
+                console.log(tab);
+                res.json({data: ecart});
             }
         };
         reqNumber++;

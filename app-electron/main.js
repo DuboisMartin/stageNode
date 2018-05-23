@@ -22,7 +22,6 @@ function createLogWindow() {
 		maxHeight: 800,
 		icon: 'mis.png',
 		title:'Utilitaire API',
-		maximizable: false,
 		fullscreenable: false,
 		resizable: false
 	});
@@ -36,7 +35,7 @@ function createLogWindow() {
 	ipcMain.on('send', function(event, arg) {
 		console.log(arg);
 		socket.open();
-		socket.emit('log', arg);		
+		socket.emit('log', arg);
 	});
 }
 
