@@ -51,11 +51,11 @@
                                 </div>
                                 <div class="accordionColor">
                                     <div id="headingColor#{val}">
-                                        <button class="btn btn-link" data-toggle="collapse#{val}" data-target="#collapseColor#{val}" aria-expended="true" aria-controls="collapseColor#{val}" aria-expanded="true">Couleur</button>
+                                        <button class="btn btn-link" data-toggle="collapse" data-target="#collapseColor#{val}" aria-expended="true" aria-controls="collapseColor#{val}" aria-expanded="true">Couleur</button>
                                     </div>
                                     <div class="collapse" id="collapseColor#{val}" data-parent="#accordionColor" aria-labelledby="heading001" >
                                         <div class="form-group border border-info p-2">
-                                            <label for="lineColor#{val}">Couleur :</label>
+                                            <label for="lineColor#{val}">Couleur du trait :</label>
                                             <input type="text" class="form-control form-control-sm" id="lineColor#{val}" placeholder="ex:#ffffff">
                                         </div>
                                     </div>
@@ -93,17 +93,6 @@
         </div>
         <div class="radio">
             <label><input type="radio" name="backColor" value="White"><div class="color-box" style="background-color: #ffffff;"></div> Fond blanc</label>
-        </div>
-    </div>    
-    <div class="form-group border border-info">
-        <div class="radio">
-            <label><input type="radio" name="lineColor" value="Red" checked><div class="color-box" style="background-color: #ff6384;"></div> Trait rouge</label>
-        </div>
-        <div class="radio">
-            <label><input type="radio" name="lineColor" value="Blue"><div class="color-box" style="background-color: #36a2eb;"></div> Trait bleu</label>
-        </div>
-        <div class="radio">
-            <label><input type="radio" name="lineColor" value="Yellow"><div class="color-box" style="background-color: #ffcd56;"></div> Trait jaune</label>
         </div>
     </div>
     <button type="button" class="btn btn-outline-info btn-block" name="LoadStat">Load</button>

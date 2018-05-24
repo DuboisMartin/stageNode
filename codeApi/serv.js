@@ -192,6 +192,34 @@ myRouter.route('/api/:capt/average/:number-:e')
     }
 });
 
+myRouter.route('/api/:capt/average/:freq/:number-:e')
+.get(function(req, res){
+    if(isIn(dbManager.availableCapteurs, req.params.capt.toString())){
+        var c = function(data){
+            if(data.length == 0){
+                res.json({data: '0', error: "No records"});
+            }else{
+                console.log(data);
+                var moyenne = 0;
+                for(var i = 0; i < data.length; i++){
+                    moyenne += Number(data[i].data);
+                }
+                moyenne = moyenne/data.length;
+                res.json({data: moyenne});
+                
+            }
+        };
+        reqNumber++;
+        if( isNaN(Number(req.params.number)) || !(req.params.e in {sec: '', min: '', hour: '', day: '', month: '', year: ''}) || !(req.params.freq in {day:'', month:'', year:''})){
+            res.json({data: "Error in params sended."});
+        }else{
+            dbManager.justExec(c, "SELECT id, data, timestamp FROM "+config.bdd.table_name+" WHERE id_capteur ='"+ req.params.capt +"' AND timestamp BETWEEN '"+moment_timezone().tz("Europe/Paris").subtract(Number(req.params.number), req.params.e).format("YYYY-MM-DD HH:mm:ss")+"' AND '"+moment_timezone().tz("Europe/Paris").format("YYYY-MM-DD HH:mm:ss")+"';");
+        }
+    }else{
+        res.json({data: '0', error: "Ce capteur n'existe pas."});
+    }
+});
+
 myRouter.route('/api/:capt/min/:number-:e')
 .get(function(req, res){
     if(isIn(dbManager.availableCapteurs, req.params.capt.toString())){
