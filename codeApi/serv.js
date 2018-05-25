@@ -16,7 +16,7 @@ var port = 80;
 var dbManager = new db();
 var moment_timezone = require('moment-timezone');
 var moment = require('moment');
-
+moment.locale('fr');
 var app = express(); 
 
 const pug = require('pug');
@@ -186,34 +186,6 @@ myRouter.route('/api/:capt/average/:number-:e')
             res.json({data: "Error in params sended."});
         }else{
             dbManager.justExec(c, "SELECT id, data FROM "+config.bdd.table_name+" WHERE id_capteur ='"+ req.params.capt +"' AND timestamp BETWEEN '"+moment_timezone().tz("Europe/Paris").subtract(Number(req.params.number), req.params.e).format("YYYY-MM-DD HH:mm:ss")+"' AND '"+moment_timezone().tz("Europe/Paris").format("YYYY-MM-DD HH:mm:ss")+"';");
-        }
-    }else{
-        res.json({data: '0', error: "Ce capteur n'existe pas."});
-    }
-});
-
-myRouter.route('/api/:capt/average/:freq/:number-:e')
-.get(function(req, res){
-    if(isIn(dbManager.availableCapteurs, req.params.capt.toString())){
-        var c = function(data){
-            if(data.length == 0){
-                res.json({data: '0', error: "No records"});
-            }else{
-                console.log(data);
-                var moyenne = 0;
-                for(var i = 0; i < data.length; i++){
-                    moyenne += Number(data[i].data);
-                }
-                moyenne = moyenne/data.length;
-                res.json({data: moyenne});
-                
-            }
-        };
-        reqNumber++;
-        if( isNaN(Number(req.params.number)) || !(req.params.e in {sec: '', min: '', hour: '', day: '', month: '', year: ''}) || !(req.params.freq in {day:'', month:'', year:''})){
-            res.json({data: "Error in params sended."});
-        }else{
-            dbManager.justExec(c, "SELECT id, data, timestamp FROM "+config.bdd.table_name+" WHERE id_capteur ='"+ req.params.capt +"' AND timestamp BETWEEN '"+moment_timezone().tz("Europe/Paris").subtract(Number(req.params.number), req.params.e).format("YYYY-MM-DD HH:mm:ss")+"' AND '"+moment_timezone().tz("Europe/Paris").format("YYYY-MM-DD HH:mm:ss")+"';");
         }
     }else{
         res.json({data: '0', error: "Ce capteur n'existe pas."});
@@ -454,6 +426,274 @@ myRouter.route('/api/util/config/new')
 
 });
 //
+
+//PARTIE STAT
+
+function done(data, moment1, moment2){
+    var tab = new Array();
+    for(var i = 0; i<data.length; i++){
+        if(moment(data[i].timestamp)<moment2 && moment(data[i].timestamp)>moment1){
+            tab.push(data[i].data);
+        }
+    }
+    return tab;
+}
+
+function average(data){
+    if(data.length == 0){
+        console.log("data length 0");
+        return 0;
+    }else{
+        var sum = 0;
+        for(var i = 0; i < data.length; i++){
+            sum += Number(data[i]);
+        }
+        return sum/data.length;
+    }
+}
+
+function min(data){
+    if(data.length == 0){
+        console.log("data length 0");
+        return 0;
+    }else{
+        var min = Number(data[0]);
+        for(var i = 1; i < data.length; i++){
+            if(Number(data[i]) < min) min = Number(data[i]);
+        }
+        return min;
+    }
+}
+
+function max(data){
+    if(data.length == 0){
+        console.log("data length 0");
+        return 0;
+    }else{
+        var max = Number(data[0]);
+        for(var i = 1; i < data.length; i++){
+            if(Number(data[i]) > max) max = Number(data[i]);
+        }
+        return max;
+    }
+}
+
+function variance(data){
+    if(data.length == 0){
+        console.log("data length 0");
+        return 0;
+    }else{
+        var tab = new Array();
+        for(var i = 0; i < data.length; i++){
+            tab.push(Number(data[i]));
+        }
+        var variance = stat.variance(tab);
+        return variance;
+    }
+    
+}
+
+function ecart(data){
+    if(data.length == 0){
+        console.log("data length 0");
+        return 0;
+    }else{
+        var tab = new Array();
+        for(var i = 0; i < data.length; i++){
+            tab.push(Number(data[i]));
+        }
+        var ecart = stat.standardDeviation(tab);
+        return ecart;
+    }
+}
+
+function skewness(data){
+    if(data.length == 0){
+        console.log("data length 0");
+        return 0;
+    }else{
+        var tab = new Array();
+        for(var i = 0; i< data.length; i++){
+            tab.push(Number(data[i]));
+        }
+        var ecart = stat.skewness(tab);
+        return ecart;
+    }
+}
+
+function num(freq, duree){
+    //How many 'freq' in 'how' Ex: How many month in year
+    if(duree == "year" && freq == "month"){
+        return 12;
+    }else if(duree == "year" && freq == "week"){
+        return 52;
+    }else if(duree == "year" && freq == "day"){
+        return 365;
+    }else if(duree == "month" && freq == "week"){
+        return 4;
+    }else if(duree == "month" && freq == "day"){
+        return 30;
+    }else if(duree == "week" && freq == "day"){
+        return 7;
+    }
+}
+
+myRouter.route('/api/:capt/average/:freq/:number-:e')
+.get(function(req, res){
+    if(isIn(dbManager.availableCapteurs, req.params.capt.toString())){
+        var c = function(data){
+            var taba = new Array();
+            var now = moment();
+            for( var i = 0; i < Number( num( req.params.freq, req.params.e ) ); i++ ){
+                let fuck1 = moment( now );
+                let fuck2 = moment( now );
+                taba.push( [average( done( data, fuck1.startOf( req.params.freq ), fuck2.endOf( req.params.freq ) ) ), req.params.freq, now.toString() ]);
+                now = now.subtract( 1, req.params.freq );
+            }
+            res.json({data: taba});
+            
+        };
+        reqNumber++;
+        if( isNaN(Number(req.params.number)) || !(req.params.e in {sec: '', min: '', hour: '', day: '', month: '', year: ''}) || !(req.params.freq in {day:'', month:'', year:''})){
+            res.json({data: "Error in params sended."});
+        }else{
+            dbManager.justExec(c, "SELECT id, data, timestamp FROM "+config.bdd.table_name+" WHERE id_capteur ='"+ req.params.capt +"' AND timestamp BETWEEN '"+moment_timezone().tz("Europe/Paris").subtract(Number(req.params.number), req.params.e).format("YYYY-MM-DD HH:mm:ss")+"' AND '"+moment_timezone().tz("Europe/Paris").format("YYYY-MM-DD HH:mm:ss")+"';");
+        }
+    }else{
+        res.json({data: '0', error: "Ce capteur n'existe pas."});
+    }
+});
+
+myRouter.route('/api/:capt/min/:freq/:number-:e')
+.get(function(req, res){
+    if(isIn(dbManager.availableCapteurs, req.params.capt.toString())){
+        var c = function(data){
+            var taba = new Array();
+            var now = moment();
+            for( var i = 0; i < Number( num( req.params.freq, req.params.e ) ); i++ ){
+                let fuck1 = moment( now );
+                let fuck2 = moment( now );
+                taba.push( [min( done( data, fuck1.startOf( req.params.freq ), fuck2.endOf( req.params.freq ) ) ), req.params.freq, now.toString() ]);
+                now = now.subtract( 1, req.params.freq );
+            }
+            res.json({data: taba});
+            
+        };
+        reqNumber++;
+        if( isNaN(Number(req.params.number)) || !(req.params.e in {sec: '', min: '', hour: '', day: '', month: '', year: ''}) || !(req.params.freq in {day:'', month:'', year:''})){
+            res.json({data: "Error in params sended."});
+        }else{
+            dbManager.justExec(c, "SELECT id, data, timestamp FROM "+config.bdd.table_name+" WHERE id_capteur ='"+ req.params.capt +"' AND timestamp BETWEEN '"+moment_timezone().tz("Europe/Paris").subtract(Number(req.params.number), req.params.e).format("YYYY-MM-DD HH:mm:ss")+"' AND '"+moment_timezone().tz("Europe/Paris").format("YYYY-MM-DD HH:mm:ss")+"';");
+        }
+    }else{
+        res.json({data: '0', error: "Ce capteur n'existe pas."});
+    }
+});
+
+myRouter.route('/api/:capt/max/:freq/:number-:e')
+.get(function(req, res){
+    if(isIn(dbManager.availableCapteurs, req.params.capt.toString())){
+        var c = function(data){
+            var taba = new Array();
+            var now = moment();
+            for( var i = 0; i < Number( num( req.params.freq, req.params.e ) ); i++ ){
+                let fuck1 = moment( now );
+                let fuck2 = moment( now );
+                taba.push( [max( done( data, fuck1.startOf( req.params.freq ), fuck2.endOf( req.params.freq ) ) ), req.params.freq, now.toString() ]);
+                now = now.subtract( 1, req.params.freq );
+            }
+            res.json({data: taba});
+            
+        };
+        reqNumber++;
+        if( isNaN(Number(req.params.number)) || !(req.params.e in {sec: '', min: '', hour: '', day: '', month: '', year: ''}) || !(req.params.freq in {day:'', month:'', year:''})){
+            res.json({data: "Error in params sended."});
+        }else{
+            dbManager.justExec(c, "SELECT id, data, timestamp FROM "+config.bdd.table_name+" WHERE id_capteur ='"+ req.params.capt +"' AND timestamp BETWEEN '"+moment_timezone().tz("Europe/Paris").subtract(Number(req.params.number), req.params.e).format("YYYY-MM-DD HH:mm:ss")+"' AND '"+moment_timezone().tz("Europe/Paris").format("YYYY-MM-DD HH:mm:ss")+"';");
+        }
+    }else{
+        res.json({data: '0', error: "Ce capteur n'existe pas."});
+    }
+});
+
+myRouter.route('/api/:capt/variance/:freq/:number-:e')
+.get(function(req, res){
+    if(isIn(dbManager.availableCapteurs, req.params.capt.toString())){
+        var c = function(data){
+            var taba = new Array();
+            var now = moment();
+            for( var i = 0; i < Number( num( req.params.freq, req.params.e ) ); i++ ){
+                let fuck1 = moment( now );
+                let fuck2 = moment( now );
+                taba.push( [variance( done( data, fuck1.startOf( req.params.freq ), fuck2.endOf( req.params.freq ) ) ), req.params.freq, now.toString() ]);
+                now = now.subtract( 1, req.params.freq );
+            }
+            res.json({data: taba});
+            
+        };
+        reqNumber++;
+        if( isNaN(Number(req.params.number)) || !(req.params.e in {sec: '', min: '', hour: '', day: '', month: '', year: ''}) || !(req.params.freq in {day:'', month:'', year:''})){
+            res.json({data: "Error in params sended."});
+        }else{
+            dbManager.justExec(c, "SELECT id, data, timestamp FROM "+config.bdd.table_name+" WHERE id_capteur ='"+ req.params.capt +"' AND timestamp BETWEEN '"+moment_timezone().tz("Europe/Paris").subtract(Number(req.params.number), req.params.e).format("YYYY-MM-DD HH:mm:ss")+"' AND '"+moment_timezone().tz("Europe/Paris").format("YYYY-MM-DD HH:mm:ss")+"';");
+        }
+    }else{
+        res.json({data: '0', error: "Ce capteur n'existe pas."});
+    }
+});
+
+myRouter.route('/api/:capt/ecart/:freq/:number-:e')
+.get(function(req, res){
+    if(isIn(dbManager.availableCapteurs, req.params.capt.toString())){
+        var c = function(data){
+            var taba = new Array();
+            var now = moment();
+            for( var i = 0; i < Number( num( req.params.freq, req.params.e ) ); i++ ){
+                let fuck1 = moment( now );
+                let fuck2 = moment( now );
+                taba.push( [ecart( done( data, fuck1.startOf( req.params.freq ), fuck2.endOf( req.params.freq ) ) ), req.params.freq, now.toString() ]);
+                now = now.subtract( 1, req.params.freq );
+            }
+            res.json({data: taba});
+            
+        };
+        reqNumber++;
+        if( isNaN(Number(req.params.number)) || !(req.params.e in {sec: '', min: '', hour: '', day: '', month: '', year: ''}) || !(req.params.freq in {day:'', month:'', year:''})){
+            res.json({data: "Error in params sended."});
+        }else{
+            dbManager.justExec(c, "SELECT id, data, timestamp FROM "+config.bdd.table_name+" WHERE id_capteur ='"+ req.params.capt +"' AND timestamp BETWEEN '"+moment_timezone().tz("Europe/Paris").subtract(Number(req.params.number), req.params.e).format("YYYY-MM-DD HH:mm:ss")+"' AND '"+moment_timezone().tz("Europe/Paris").format("YYYY-MM-DD HH:mm:ss")+"';");
+        }
+    }else{
+        res.json({data: '0', error: "Ce capteur n'existe pas."});
+    }
+});
+
+myRouter.route('/api/:capt/skewness/:freq/:number-:e')
+.get(function(req, res){
+    if(isIn(dbManager.availableCapteurs, req.params.capt.toString())){
+        var c = function(data){
+            var taba = new Array();
+            var now = moment();
+            for( var i = 0; i < Number( num( req.params.freq, req.params.e ) ); i++ ){
+                let fuck1 = moment( now );
+                let fuck2 = moment( now );
+                taba.push( [skewness( done( data, fuck1.startOf( req.params.freq ), fuck2.endOf( req.params.freq ) ) ), req.params.freq, now.toString() ]);
+                now = now.subtract( 1, req.params.freq );
+            }
+            res.json({data: taba});
+            
+        };
+        reqNumber++;
+        if( isNaN(Number(req.params.number)) || !(req.params.e in {sec: '', min: '', hour: '', day: '', month: '', year: ''}) || !(req.params.freq in {day:'', month:'', year:''})){
+            res.json({data: "Error in params sended."});
+        }else{
+            dbManager.justExec(c, "SELECT id, data, timestamp FROM "+config.bdd.table_name+" WHERE id_capteur ='"+ req.params.capt +"' AND timestamp BETWEEN '"+moment_timezone().tz("Europe/Paris").subtract(Number(req.params.number), req.params.e).format("YYYY-MM-DD HH:mm:ss")+"' AND '"+moment_timezone().tz("Europe/Paris").format("YYYY-MM-DD HH:mm:ss")+"';");
+        }
+    }else{
+        res.json({data: '0', error: "Ce capteur n'existe pas."});
+    }
+});
+//FIN PARTIE STAT
 
 function newCapteurs(capt) {
     console.log("Nouveaux capteurs : "+capt);
