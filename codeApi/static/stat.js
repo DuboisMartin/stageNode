@@ -18,17 +18,20 @@ var StatChart = new Chart(stat, {
 
 var selectedCapteurs = 0;
 var selectedCapteursTab = new Array();
+var selectedCapteursColor = new Array();
+var regex = new RegExp("^#([0-9a-f]{3}|[0-9a-f]{6})$");
 function compte(){
     selectedCapteursTab = new Array();
+    selectedCapteursColor = new Array();
     selectedCapteurs = 0;
     document.querySelectorAll('input[id^="defaultCheck"]').forEach(element => {
         if(element.checked){
             selectedCapteursTab.push(element);
             selectedCapteurs++;
         }
+
     });
 }
-
 document.querySelectorAll('input[id^="defaultCheck"]').forEach(element => {
     element.addEventListener('click', compte);
 });
@@ -90,6 +93,14 @@ function num(freq, duree){
 }
 
 document.getElementsByName('LoadStat')[0].addEventListener('click', function(){
+    selectedCapteursTab.forEach(element => {
+        console.log(document.querySelector('input[id="lineColor'+element.value+'"]').value);
+        console.log(regex.exec(document.querySelector('input[id="lineColor'+element.value+'"]').value).length);
+        if(document.querySelector('input[id="lineColor'+element.value+'"]').value.length == 7 && regex.exec(document.querySelector('input[id="lineColor'+element.value+'"]').value).length > 0){
+            selectedCapteursColor.push([element, document.querySelector('input[id="lineColor'+element.value+'"]').value]);
+        }
+    });
+
     StatChart.data.datasets = new Array();
     StatChart.data.labels = new Array();
     StatChart.update();
