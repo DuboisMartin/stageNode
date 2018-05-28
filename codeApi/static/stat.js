@@ -4,16 +4,8 @@ var stat = document.getElementById("GraphStat");
 var StatChart = new Chart(stat, {
     type: 'line',
     data: {
-            labels: [0, 1, 0],
-            datasets: [{
-                label: 'Stat',
-                data: [-1, 1, -1],
-                "fill": false,
-                borderWidth: 1,
-                borderColor: [
-                    '#ff6384'
-                ]
-            }]
+            labels: [],
+            datasets: []
         },
     options: {
         elements: {
@@ -25,16 +17,19 @@ var StatChart = new Chart(stat, {
 });
 
 var selectedCapteurs = 0;
+var selectedCapteursTab = new Array();
 function compte(){
+    selectedCapteursTab = new Array();
     selectedCapteurs = 0;
-    document.getElementsByName("capt").forEach(element => {
+    document.querySelectorAll('input[id^="defaultCheck"]').forEach(element => {
         if(element.checked){
+            selectedCapteursTab.push(element);
             selectedCapteurs++;
         }
     });
 }
 
-document.getElementsByName("capt").forEach(element => {
+document.querySelectorAll('input[id^="defaultCheck"]').forEach(element => {
     element.addEventListener('click', compte);
 });
 
@@ -56,7 +51,13 @@ function createReq(capt, opt, freq, time){
     }
 
     if(freq == "all"){
-        req+="from/";
+        req+="";
+    }else if(freq == "day"){
+        req+="day/";
+    }else if(freq == "month"){
+        req+="month/";
+    }else if(freq == "year"){
+        req+="year/";
     }
 
     if(time == 'day'){
@@ -71,25 +72,57 @@ function createReq(capt, opt, freq, time){
 
 }
 
+function num(freq, duree){
+    //How many 'freq' in 'how' Ex: How many month in year
+    if(duree == "year" && freq == "month"){
+        return 12;
+    }else if(duree == "year" && freq == "week"){
+        return 52;
+    }else if(duree == "year" && freq == "day"){
+        return 365;
+    }else if(duree == "month" && freq == "week"){
+        return 4;
+    }else if(duree == "month" && freq == "day"){
+        return 30;
+    }else if(duree == "week" && freq == "day"){
+        return 7;
+    }
+}
+
 document.getElementsByName('LoadStat')[0].addEventListener('click', function(){
+    StatChart.data.datasets = new Array();
+    StatChart.data.labels = new Array();
+    StatChart.update();
     var number = selectedCapteurs;
-    var option = document.querySelector('input[name="option"]:checked').value;
-    var freq = document.querySelector('input[name="freq"]:checked').value;
-    var time = document.querySelector('input[name="time"]:checked').value;
+    var time = document.querySelector('input[name^="time"]:checked').value;
     var test = {};
     test.labels = [];
     test.datasets = new Array();
     for(var i = 0; i < number; i++){
-        console.log(i);
+        var option = document.querySelectorAll('input[name^="option"]:checked')[i].value;
+        var freq = document.querySelectorAll('input[name^="freq"]:checked')[i].value;
+        var labelNumber = num(freq, time);
         test.datasets[i] = {};
-        test.datasets[i].label = document.querySelectorAll('input[name="capt"]:checked')[i].id;
+        test.datasets[i].label = selectedCapteursTab[i].value;
         test.datasets[i].borderColor = "rgba(255, 0, 0, 1)";
         test.datasets[i].borderWidth = 2;
         test.datasets[i].fill = false;
         test.datasets[i].data = [];
-        console.log(createReq(document.querySelectorAll('input[name="capt"]:checked')[i].id, option, freq, time));
-        $.get(createReq(document.querySelectorAll('input[name="capt"]:checked')[i].id, option, freq, time), function( dt ){
-            console.log("finis : "+i);
+        
+        $.get(createReq(selectedCapteursTab[i].value, option, freq, time), function( dt ){
+            var boolBoucle = false;
+            if(StatChart.data.labels.length == 0 ){
+                boolBoucle = true;
+            }
+            
+            for(var j = 0; j < dt.data.length; j++){
+                if(boolBoucle == true){
+                    StatChart.data.labels.push(dt.data[j][2])
+                }
+                test.datasets[i].data.push(dt.data[j][0]);
+            }
+            StatChart.data.datasets.push(test.datasets[i]);
+            StatChart.update();
         });
     }
     

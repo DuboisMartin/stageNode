@@ -547,7 +547,16 @@ myRouter.route('/api/:capt/average/:freq/:number-:e')
             for( var i = 0; i < Number( num( req.params.freq, req.params.e ) ); i++ ){
                 let fuck1 = moment( now );
                 let fuck2 = moment( now );
-                taba.push( [average( done( data, fuck1.startOf( req.params.freq ), fuck2.endOf( req.params.freq ) ) ), req.params.freq, now.toString() ]);
+
+                if(req.params.freq == "month"){
+                    var format = "MMM";
+                }else if(req.params.freq == "day"){
+                    var format = "ddd";
+                }else if(req.params.freq == "year"){
+                    var format = "YYYY";
+                }
+
+                taba.push( [average( done( data, fuck1.startOf( req.params.freq ), fuck2.endOf( req.params.freq ) ) ), req.params.freq, now.format(format) ]);
                 now = now.subtract( 1, req.params.freq );
             }
             res.json({data: taba});
@@ -573,7 +582,16 @@ myRouter.route('/api/:capt/min/:freq/:number-:e')
             for( var i = 0; i < Number( num( req.params.freq, req.params.e ) ); i++ ){
                 let fuck1 = moment( now );
                 let fuck2 = moment( now );
-                taba.push( [min( done( data, fuck1.startOf( req.params.freq ), fuck2.endOf( req.params.freq ) ) ), req.params.freq, now.toString() ]);
+
+                if(req.params.freq == "month"){
+                    var format = "MMM";
+                }else if(req.params.freq == "day"){
+                    var format = "ddd";
+                }else if(req.params.freq == "year"){
+                    var format = "YYYY";
+                }
+
+                taba.push( [min( done( data, fuck1.startOf( req.params.freq ), fuck2.endOf( req.params.freq ) ) ), req.params.freq, now.format(format) ]);
                 now = now.subtract( 1, req.params.freq );
             }
             res.json({data: taba});
@@ -599,7 +617,16 @@ myRouter.route('/api/:capt/max/:freq/:number-:e')
             for( var i = 0; i < Number( num( req.params.freq, req.params.e ) ); i++ ){
                 let fuck1 = moment( now );
                 let fuck2 = moment( now );
-                taba.push( [max( done( data, fuck1.startOf( req.params.freq ), fuck2.endOf( req.params.freq ) ) ), req.params.freq, now.toString() ]);
+
+                if(req.params.freq == "month"){
+                    var format = "MMM";
+                }else if(req.params.freq == "day"){
+                    var format = "ddd";
+                }else if(req.params.freq == "year"){
+                    var format = "YYYY";
+                }
+
+                taba.push( [max( done( data, fuck1.startOf( req.params.freq ), fuck2.endOf( req.params.freq ) ) ), req.params.freq, now.format(format) ]);
                 now = now.subtract( 1, req.params.freq );
             }
             res.json({data: taba});
@@ -625,7 +652,16 @@ myRouter.route('/api/:capt/variance/:freq/:number-:e')
             for( var i = 0; i < Number( num( req.params.freq, req.params.e ) ); i++ ){
                 let fuck1 = moment( now );
                 let fuck2 = moment( now );
-                taba.push( [variance( done( data, fuck1.startOf( req.params.freq ), fuck2.endOf( req.params.freq ) ) ), req.params.freq, now.toString() ]);
+
+                if(req.params.freq == "month"){
+                    var format = "MMM";
+                }else if(req.params.freq == "day"){
+                    var format = "ddd";
+                }else if(req.params.freq == "year"){
+                    var format = "YYYY";
+                }
+
+                taba.push( [variance( done( data, fuck1.startOf( req.params.freq ), fuck2.endOf( req.params.freq ) ) ), req.params.freq, now.format(format) ]);
                 now = now.subtract( 1, req.params.freq );
             }
             res.json({data: taba});
@@ -651,7 +687,16 @@ myRouter.route('/api/:capt/ecart/:freq/:number-:e')
             for( var i = 0; i < Number( num( req.params.freq, req.params.e ) ); i++ ){
                 let fuck1 = moment( now );
                 let fuck2 = moment( now );
-                taba.push( [ecart( done( data, fuck1.startOf( req.params.freq ), fuck2.endOf( req.params.freq ) ) ), req.params.freq, now.toString() ]);
+
+                if(req.params.freq == "month"){
+                    var format = "MMM";
+                }else if(req.params.freq == "day"){
+                    var format = "ddd";
+                }else if(req.params.freq == "year"){
+                    var format = "YYYY";
+                }
+
+                taba.push( [ecart( done( data, fuck1.startOf( req.params.freq ), fuck2.endOf( req.params.freq ) ) ), req.params.freq, now.format(format) ]);
                 now = now.subtract( 1, req.params.freq );
             }
             res.json({data: taba});
@@ -677,7 +722,16 @@ myRouter.route('/api/:capt/skewness/:freq/:number-:e')
             for( var i = 0; i < Number( num( req.params.freq, req.params.e ) ); i++ ){
                 let fuck1 = moment( now );
                 let fuck2 = moment( now );
-                taba.push( [skewness( done( data, fuck1.startOf( req.params.freq ), fuck2.endOf( req.params.freq ) ) ), req.params.freq, now.toString() ]);
+
+                if(req.params.freq == "month"){
+                    var format = "MMM";
+                }else if(req.params.freq == "day"){
+                    var format = "ddd";
+                }else if(req.params.freq == "year"){
+                    var format = "YYYY";
+                }
+
+                taba.push( [skewness( done( data, fuck1.startOf( req.params.freq ), fuck2.endOf( req.params.freq ) ) ), req.params.freq, now.format(format) ]);
                 now = now.subtract( 1, req.params.freq );
             }
             res.json({data: taba});
@@ -693,6 +747,7 @@ myRouter.route('/api/:capt/skewness/:freq/:number-:e')
         res.json({data: '0', error: "Ce capteur n'existe pas."});
     }
 });
+
 //FIN PARTIE STAT
 
 function newCapteurs(capt) {
