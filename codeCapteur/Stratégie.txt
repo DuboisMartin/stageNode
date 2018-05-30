@@ -1,0 +1,64 @@
+REQUEST MESSAGE FORMAT
+
+<A><addr><cmd><prm><CR>
+
+<A> : Caractère ASCII 'A' (hex: 41)
+<addr> : Adresse de l'instrument (Caractère ASCII entre '1' hex: 31 et '9' hex: 39), l'instrument ne répond qui si l'adresse appelé est celle configuré dans 3DOM
+<cmd> : La commande : 
+    - <I> : Caractère ASCII 'I', demande l'envois des valeurs instantanée mesurées
+    - <S> : Caractère ASCII 'S', demande l'envois des information enregistrée sur les capteurs.
+    - <T> : Caractère ASCII 'T', commande pour ajusté l'horlogerie interne (E-Log version 2.01.04 min)
+    - <A> : Caractère ASCII 'A', ordonne l'envois des valeurs instantanée a interval régulier( interval configuré avec 3DOM, si la valeur n'a pas été configuré ou est égal a zéro, l'interval par défaut et 10secondes)
+    - <M> : Caractère ASCII 'M', ordonne l'arrêt de l'envois automatique des valeurs instantanée(si l'interval n'est pas nul, l'envois automatique recommence au redémarrage)
+    - <D> : Caractère ASCII 'D', demande l'envois des données de diagnostique et de statistique au sujet des instruments
+    - <R> : Caractère ASCII 'R', mise a zéro des données de statistique et de diagnostique DANGEREUX
+<prm> : Paramètres optionnels
+<CR> : Caractère ASCII '\r', fin de message
+
+
+RESPONSE MESSAGES FORMAT
+
+    SIMPLE CONFIRMATION ANSWER
+
+        Pour les commandes ne nécessitants pas de réponse détaillé comme <M> et <R>, le datalogger envois une simple réponse : 
+        <OK> : Si aucune erreurs ne s'est produite et qu'elle à était exécuté correctement 
+        <Err> : Si une erreur est détecter.
+
+    INSTANTANEOUS VALUES
+
+        <addr><I><nnn.nn>;<nnn.nn>;...<[CS]><CR><LF>
+
+        <addr> : Adresse de l'instrument (Sûrement entre '1' et '9' hex: 31 et hex: 39)
+        <I> : Code la commande a l'origine de cette réponse 
+        <nnn.nn> : Valeur instantanée de la mesure n. n(n) est la position (l'index) de la valeur par rapport aux autres valeurs incluses dans le message. (donc logiquement nnn est la valeur a proprement parler) le nombre de Caractères dans nnn dépends de la précisions des capteurs. Un message ne peut pas contenir plus de 25 mesures, si il y a plus de mesures un autres messages est envoyer précéder de <Mxxx> où xxx correspond a l'index de la première mesure de ce message;
+        <[CS]> : Checksum du message.
+        <CR> : Caractère ASCII '\r'
+        <LF> : Caractère ASCII '\n', fin du message
+
+    REGISTRY information
+
+        <addr><S><M:ccc/sss>;<V:MM.mm.bb>;<S:fff/uuu><[CS]><CR><LF>
+
+        <addr> : Adresse de l'instrument (Sûrement entre '1' et '9' hex: 31 et hex: 39)
+        <S> : Code de la commande a l'origine de cette réponse
+        <M:ccc/sss> : modèle de l'instrument (ccc=code, sss=sub-code)
+        <V:MM.mm.bb> : Version du firmware (MM = major version, mm = minor version, bb = build version)
+        <S:fff/uuu> : Numéro de série (fff = factory reference, uuu = user defined value)
+        <[CS]> : Checksum du message.
+        <CR> : Caractère ASCII '\r'
+        <LF> : Caractère ASCII '\n', fin du message
+
+    STATISTIC AND DIAGNOSTIC DATA
+        
+        <addr><D><L:lll>;<S:sss>;<C:ccc>;<E:eee><[CS]><CR><LF>
+
+        <addr> : Adresse de l'instrument (Sûrement entre '1' et '9' hex: 31 et hex: 39)
+        <D> : Code de la commande a l'origine de cette réponse
+        <L:lll> : Lifetime sous le format : ddd hh::mm::ss
+        <S:sss> : Date de la dernière remise a zéro  sous le format : yy/mm/dd hh:mm:ss
+        <C:ccc> : Date/heure du système sous le format : yy/mm/dd hh:mm:ss
+        <E:eee> : Code hexadécimal de l'erreur trouvé par l'instrument
+        <[CS]> : Checksum du message.
+        <CR> : Caractère ASCII '\r'
+        <LF> : Caractère ASCII '\n', fin du message
+
