@@ -1,8 +1,7 @@
-const Manager = require('./ManagerPost.js');
-
-var config = require('config.json')('../config.json');
 var serialport = require("serialport");
 var SerialPort = serialport.SerialPort;
+var moment = require('moment');
+const Manager = require('./ManagerPostReal.js');
 var Main = new Manager();
 
 var port = new serialport("COM3", {
@@ -12,6 +11,7 @@ var port = new serialport("COM3", {
 
 port.on('open', function() {
     console.log("Port ouvert");
+    setTimeout(function(){port.write('A1D\r\n');console.log('command sended');}, 1500);
 });
 
 port.open(function (err) {
@@ -21,6 +21,6 @@ port.open(function (err) {
 });
 
 port.on('data', function(data){
-    Main.addData(data);
+    console.log(moment().format('hh:mm:ss')+"   "+data.length);
+    //Main.addData(data);
 });
-

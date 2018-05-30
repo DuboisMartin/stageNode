@@ -8,7 +8,7 @@ REQUEST MESSAGE FORMAT
     - <I> : Caractère ASCII 'I', demande l'envois des valeurs instantanée mesurées
     - <S> : Caractère ASCII 'S', demande l'envois des information enregistrée sur les capteurs.
     - <T> : Caractère ASCII 'T', commande pour ajusté l'horlogerie interne (E-Log version 2.01.04 min)
-    - <A> : Caractère ASCII 'A', ordonne l'envois des valeurs instantanée a interval régulier( interval configuré avec 3DOM, si la valeur n'a pas été configuré ou est égal a zéro, l'interval par défaut et 10secondes)
+    - <A> : Caractère ASCII 'A', ordonne l'envois des valeurs instantanée a interval régulier( interval configuré avec 3DOM, si la valeur n'a pas été configuré ou est égal a zéro, l'interval par défaut est 10secondes)
     - <M> : Caractère ASCII 'M', ordonne l'arrêt de l'envois automatique des valeurs instantanée(si l'interval n'est pas nul, l'envois automatique recommence au redémarrage)
     - <D> : Caractère ASCII 'D', demande l'envois des données de diagnostique et de statistique au sujet des instruments
     - <R> : Caractère ASCII 'R', mise a zéro des données de statistique et de diagnostique DANGEREUX
