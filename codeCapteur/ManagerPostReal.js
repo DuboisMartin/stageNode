@@ -1,7 +1,7 @@
 var request = require('request');
 const { StringDecoder } = require('string_decoder');
 
-var config = require('config.json')('../config.json');
+var config = require('config.json')('../configReal.json');
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
