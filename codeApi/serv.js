@@ -759,11 +759,14 @@ function newCapteurs(capt) {
 
 app.use(myRouter);
 
-var https = require('https');
-https.createServer({
+var https = require('http');
+/*https.createServer({
     key : fs.readFileSync('key.pem'),
     cert: fs.readFileSync('cert.pem')
-}, app).listen(443);
+}, app).listen(80);*/
+
+https.createServer(function(req, res) {
+}, app).listen(80);
 
 io.sockets.on('connection', function (socket) {
     socket_client = socket;

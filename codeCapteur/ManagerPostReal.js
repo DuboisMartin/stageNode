@@ -6,13 +6,13 @@ var config = require('config.json')('../configReal.json');
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
 class Manager{
-    constructor(){
+    constructor(ip){
         this.buf = Buffer.alloc(50, 0);
         this.length = 0;
         this.status;
         this.tryJoin();
         this.decoder = new StringDecoder('utf-8');
-
+        this.addr = ip;
     }
     
     get getdata(){
@@ -25,17 +25,19 @@ class Manager{
         });
         return str;
     }
-
+    
     //Pour le code ascii d'un caractére : String.fromCharCode(data[i]).charCodeAt(0);
 
     tryJoin(){
-        console.log('https://'+config.server.server_host+'/api');
-        request.get('https://'+config.server.server_host+'/api').on('response', function(response){ if(response.statusCode == 200) console.log("Api joignable."); else console.log("Api error");}).on('error', function(err){ console.log("Api error") })
+        console.log('https://'+this.addr+'/api');
+        request.get('http://'+this.addr+'/api').on('response', function(response){ if(response.statusCode == 200) console.log("Api joignable."); else console.log(response);}).on('error', function(err){ console.log(err) })
+
+        request.get('https://'+this.addr+'/api').on('response', function(response){ if(response.statusCode == 200) console.log("Api joignable."); else console.log("Api error");}).on('error', function(err){ console.log("Api error") })
     }
 
     addData(data){
         for(let i = 0; i < data.length; i++){
-            if(String.fromCharCode(data[i]).charCodeAt(0) != 13 && String.fromCharCode(data[i]).charCodeAt(0) != 10){
+            if(String.fromCharCode(data[i]).charCodeAt(0) != 10){
                 this.buf += String.fromCharCode(data[i]);
                 this.length++;
             }else{
@@ -43,14 +45,34 @@ class Manager{
                     this.send();
                 }
                 this.buf = null;
-                this.buf = Buffer.alloc(6, 0);
+                this.buf = Buffer.alloc(50, 0);
                 this.length = 0;
             }
         }
     }
 
     send(){
-        var options = {
+        console.log("asked to send data : "+ this.getdata);
+        var src = this.getdata.substr;
+        var tab = new Array();
+        tab = this.getdata.substr(2, 100).substr(0, this.getdata.substr(2, 100).length-5).split(';');
+        for(var i = 0; i < tab.length-1; i++){
+            var options = {
+                uri: 'http://'+this.addr+'/api/01'+String(i)+'/last?raw_data='+tab[i],
+                method: 'POST'
+            };
+            console.log("Try sending temp");
+            console.log(options.uri)
+            request(options, function(error, response, body) {
+                if(!error && response.statusCode == 200){
+                    console.log("temp sended.");
+                }else{
+                    console.log(error);
+                }
+            });
+
+        }
+        /*var options = {
             uri: 'https://'+config.server.server_host+'/api/006/last?raw_data='+this.getdata,
             method: 'POST'
         };
@@ -60,7 +82,7 @@ class Manager{
             if(!error && response.statusCode == 200){
                 console.log("temp sended.");
             }
-        });
+        });*/
     }
 }
 module.exports = Manager;
