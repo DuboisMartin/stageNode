@@ -1,6 +1,7 @@
+const cert = false;
 if(process.argv.length > 2){
     console.log("Arg detected, real cert will be used");
-    const cert = true;
+    cert = true;
 }
 
 var express = require('express'); 
