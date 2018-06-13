@@ -1,16 +1,18 @@
-if(process.argv.length < 4){
-    console.log("Use : '" + process.argv[0] +" "+ process.argv[1]+" baudrate IpAPI'");
+if(process.argv.length < 3){
+    console.log("Use : 'node "+ process.argv[1]+" IpAPI'");
     return 0;
+}else{
+    console.log("IP : "+process.argv[2]);
 }
 
 var serialport = require("serialport");
 var SerialPort = serialport.SerialPort;
 var moment = require('moment');
 const Manager = require('./ManagerPostReal.js');
-var Main = new Manager(process.argv[3]);
+var Main = new Manager(String(process.argv[2]));
 
 var port = new serialport("COM3", {
-    baudRate: Number(process.argv[2]),
+    baudRate: Number(9600),
     autoOpen: false
 });
 

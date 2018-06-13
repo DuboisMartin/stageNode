@@ -7,12 +7,13 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
 class Manager{
     constructor(ip){
+        console.log(":::"+ip);
+        this.ip = ip;
         this.buf = Buffer.alloc(50, 0);
         this.length = 0;
         this.status;
         this.tryJoin();
         this.decoder = new StringDecoder('utf-8');
-        this.addr = ip;
     }
     
     get getdata(){
@@ -29,10 +30,10 @@ class Manager{
     //Pour le code ascii d'un caractére : String.fromCharCode(data[i]).charCodeAt(0);
 
     tryJoin(){
-        console.log('https://'+this.addr+'/api');
-        request.get('http://'+this.addr+'/api').on('response', function(response){ if(response.statusCode == 200) console.log("Api joignable."); else console.log(response);}).on('error', function(err){ console.log(err) })
+        console.log('https://'+this.ip+'/api');
+        request.get('https://'+this.ip+'/api').on('response', function(response){ if(response.statusCode == 200) console.log("Api joignable."); else console.log(response);}).on('error', function(err){ console.log(err) })
 
-        request.get('https://'+this.addr+'/api').on('response', function(response){ if(response.statusCode == 200) console.log("Api joignable."); else console.log("Api error");}).on('error', function(err){ console.log("Api error") })
+        request.get('https://'+this.ip+'/api').on('response', function(response){ if(response.statusCode == 200) console.log("Api joignable."); else console.log("Api error");}).on('error', function(err){ console.log("Api error") })
     }
 
     addData(data){
@@ -58,7 +59,7 @@ class Manager{
         tab = this.getdata.substr(2, 100).substr(0, this.getdata.substr(2, 100).length-5).split(';');
         for(var i = 0; i < tab.length-1; i++){
             var options = {
-                uri: 'http://'+this.addr+'/api/01'+String(i)+'/last?raw_data='+tab[i],
+                uri: 'https://'+this.ip+'/api/01'+String(i)+'/last?raw_data='+tab[i],
                 method: 'POST'
             };
             console.log("Try sending temp");
