@@ -522,7 +522,7 @@ function skewness(data){
 }
 
 function num(freq, duree){
-    //How many 'freq' in 'how' Ex: How many month in year
+    //How many 'freq' in 'duree' Ex: How many month in year
     if(duree == "year" && freq == "month"){
         return 12;
     }else if(duree == "year" && freq == "week"){
@@ -535,6 +535,14 @@ function num(freq, duree){
         return 30;
     }else if(duree == "week" && freq == "day"){
         return 7;
+    }else if(duree == "day" && freq == "hour"){
+        return 24;
+    }else if(duree == "week" && freq == "hour"){
+        return 168;
+    }else if(duree == "month" && freq == "hour"){
+        return 720;
+    }else if(duree == "year" && freq == "hour"){
+        return 8760; 
     }
 }
 
