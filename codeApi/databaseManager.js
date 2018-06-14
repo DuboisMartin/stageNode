@@ -158,7 +158,7 @@ class databaseManager{
     }
 
     recupLast(callback , idCapteur, number = 1){
-        var req = "SELECT id, data FROM "+config.bdd.table_name+" ORDER BY id DESC LIMIT "+number+";";
+        var req = "SELECT id, data FROM "+config.bdd.table_name+"WHERE id_capteur ="+idCapteur+" ORDER BY id DESC LIMIT "+number+";";
         this.con.query(req, function(err, result){
             if(err){
                 throw err;
