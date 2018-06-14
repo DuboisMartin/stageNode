@@ -139,7 +139,7 @@ class databaseManager{
     }
 
     recupSome(callback, idD, idF, idCapteur){
-        var req = "SELECT id, data FROM "+config.bdd.table_name+" WHERE id_capteur = "+idCapteur+" id BETWEEN '"+idD+"' and '"+idF+"' ;";
+        var req = "SELECT id, data FROM "+config.bdd.table_name+" WHERE id_capteur = "+idCapteur+" AND id BETWEEN '"+idD+"' and '"+idF+"' ;";
         this.con.query(req, function(err, result){
             if(err){
                 return err;
@@ -158,7 +158,7 @@ class databaseManager{
     }
 
     recupLast(callback , idCapteur, number = 1){
-        var req = "SELECT id, data FROM "+config.bdd.table_name+"WHERE id_capteur = "+idCapteur+" ORDER BY id DESC LIMIT "+number+";";
+        var req = "SELECT id, data FROM "+config.bdd.table_name+" WHERE id_capteur = "+idCapteur+" ORDER BY id DESC LIMIT "+number+";";
         this.con.query(req, function(err, result){
             if(err){
                 throw err;
