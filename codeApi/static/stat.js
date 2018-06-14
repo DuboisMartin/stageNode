@@ -37,7 +37,7 @@ document.querySelectorAll('input[id^="defaultCheck"]').forEach(element => {
 });
 
 function createReq(capt, opt, freq, time){
-    var req = "https://localhost/api/"+capt+"/";
+    var req = "https://upjv.edt.ovh/api/"+capt+"/";
     
     if(opt == 'Moyenne'){
         req+="average/";
