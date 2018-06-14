@@ -93,13 +93,11 @@ function num(freq, duree){
 }
 
 document.getElementsByName('LoadStat')[0].addEventListener('click', function(){
-    selectedCapteursTab.forEach(element => {
-        console.log(document.querySelector('input[id="lineColor'+element.value+'"]').value);
-        console.log(regex.exec(document.querySelector('input[id="lineColor'+element.value+'"]').value).length);
+    /*selectedCapteursTab.forEach(element => {
         if(document.querySelector('input[id="lineColor'+element.value+'"]').value.length == 7 && regex.exec(document.querySelector('input[id="lineColor'+element.value+'"]').value).length > 0){
             selectedCapteursColor.push([element, document.querySelector('input[id="lineColor'+element.value+'"]').value]);
         }
-    });
+    });*/
 
     StatChart.data.datasets = new Array();
     StatChart.data.labels = new Array();
@@ -110,8 +108,18 @@ document.getElementsByName('LoadStat')[0].addEventListener('click', function(){
     test.labels = [];
     test.datasets = new Array();
     for(var i = 0; i < number; i++){
-        var option = document.querySelectorAll('input[name^="option"]:checked')[i].value;
-        var freq = document.querySelectorAll('input[name^="freq"]:checked')[i].value;
+        var option = [];
+        document.querySelectorAll('input[name^="option"]:checked').forEach(function(elem){
+            if(!elem.disabled){
+                option.push(elem.value);
+            }
+        });
+        var freq = [];
+        document.querySelectorAll('input[name^="freq"]:checked').forEach(function(elem){
+            if(!elem.disabled){
+                freq.push(elem.value);
+            }
+        });
         var labelNumber = num(freq, time);
         test.datasets[i] = {};
         test.datasets[i].label = selectedCapteursTab[i].value;
@@ -168,5 +176,20 @@ document.getElementsByName('lineColor').forEach((element) => {
         }else if(document.querySelector("[name='lineColor']:checked").value == "Yellow"){
 
         }
+    });
+});
+
+document.querySelectorAll('[id^="defaultCheck"]').forEach(function(elem) {
+    console.log(elem);
+    elem.addEventListener('click', function(ele){
+        console.log(ele.target);
+        document.getElementsByName('option'+ele.target.value).forEach(function(el) {
+            console.log(el);
+            el.disabled = !el.disabled;
+        });
+        document.getElementsByName('freq'+ele.target.value).forEach(function(el) {
+            console.log(el)
+            el.disabled = !el.disabled;
+        });
     });
 });

@@ -1,4 +1,4 @@
-const cert = false;
+var cert = false;
 if(process.argv.length > 2){
     console.log("Arg detected, real cert will be used");
     cert = true;
