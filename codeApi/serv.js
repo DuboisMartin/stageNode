@@ -87,7 +87,7 @@ app.get('/contenuStat.html', function(req, res) {
     res.render('../template', {tab: dbManager.availableCapteurs});
 });
 
-myRouter.route('/api').get(function(req, res){ reqNumber ++; res.json({data : "Hello world!"}); });
+myRouter.route('/api').get(function(req, res){ console.log(req.ip); reqNumber ++; res.json({data : "Hello world!"}); });
 
 myRouter.route('/api/:capt/last')
 //region
