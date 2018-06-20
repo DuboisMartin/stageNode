@@ -65,6 +65,8 @@ function createReq(capt, opt, freq, time){
 
     if(time == 'day'){
         req+="1-day";
+    }else if(time == 'week'){
+        req+="1-week";
     }else if(time == 'month'){
         req+="1-month";
     }else if(time == 'year'){

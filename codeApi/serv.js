@@ -565,11 +565,13 @@ myRouter.route('/api/:capt/average/:freq/:number-:e')
                 if(req.params.freq == "month"){
                     var format = "MMM";
                 }else if(req.params.freq == "day"){
-                    var format = "ddd";
+                    var format = "d";
+                }else if(req.params.freq == "week"){
+                    var format = "d/MM";
                 }else if(req.params.freq == "year"){
                     var format = "YYYY";
                 }else if(req.params.freq == "hour"){
-                    var format = "HHmm";
+                    var format = "HH:mm";
                 }
 
                 taba.push( [average( done( data, fuck1.startOf( req.params.freq ), fuck2.endOf( req.params.freq ) ) ), req.params.freq, now.format(format) ]);
@@ -603,10 +605,12 @@ myRouter.route('/api/:capt/min/:freq/:number-:e')
                     var format = "MMM";
                 }else if(req.params.freq == "day"){
                     var format = "ddd";
+                }else if(req.params.freq == "week"){
+                    var format = "d/MM";
                 }else if(req.params.freq == "year"){
                     var format = "YYYY";
                 }else if(req.params.freq == "hour"){
-                    var format = "HHmm";
+                    var format = "HH:mm";
                 }
 
                 taba.push( [min( done( data, fuck1.startOf( req.params.freq ), fuck2.endOf( req.params.freq ) ) ), req.params.freq, now.format(format) ]);
@@ -640,10 +644,12 @@ myRouter.route('/api/:capt/max/:freq/:number-:e')
                     var format = "MMM";
                 }else if(req.params.freq == "day"){
                     var format = "ddd";
+                }else if(req.params.freq == "week"){
+                    var format = "d/MM";
                 }else if(req.params.freq == "year"){
                     var format = "YYYY";
                 }else if(req.params.freq == "hour"){
-                    var format = "HHmm";
+                    var format = "HH:mm";
                 }
 
                 taba.push( [max( done( data, fuck1.startOf( req.params.freq ), fuck2.endOf( req.params.freq ) ) ), req.params.freq, now.format(format) ]);
@@ -677,10 +683,12 @@ myRouter.route('/api/:capt/variance/:freq/:number-:e')
                     var format = "MMM";
                 }else if(req.params.freq == "day"){
                     var format = "ddd";
+                }else if(req.params.freq == "week"){
+                    var format = "d/MM";
                 }else if(req.params.freq == "year"){
                     var format = "YYYY";
                 }else if(req.params.freq == "hour"){
-                    var format = "HHmm";
+                    var format = "HH:mm";
                 }
 
                 taba.push( [variance( done( data, fuck1.startOf( req.params.freq ), fuck2.endOf( req.params.freq ) ) ), req.params.freq, now.format(format) ]);
@@ -714,6 +722,8 @@ myRouter.route('/api/:capt/ecart/:freq/:number-:e')
                     var format = "MMM";
                 }else if(req.params.freq == "day"){
                     var format = "ddd";
+                }else if(req.params.freq == "week"){
+                    var format = "d/MM";
                 }else if(req.params.freq == "year"){
                     var format = "YYYY";
                 }else if(req.params.freq == "hour"){
@@ -751,6 +761,8 @@ myRouter.route('/api/:capt/skewness/:freq/:number-:e')
                     var format = "MMM";
                 }else if(req.params.freq == "day"){
                     var format = "ddd";
+                }else if(req.params.freq == "week"){
+                    var format = "d/MM";
                 }else if(req.params.freq == "year"){
                     var format = "YYYY";
                 }else if(req.params.freq == "hour"){
