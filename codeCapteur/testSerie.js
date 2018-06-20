@@ -28,6 +28,6 @@ port.open(function (err) {
 });
 
 port.on('data', function(data){
-    console.log(moment().format('hh:mm:ss')+"   "+data.length);
+    console.log(moment().format('hh:mm:ss')+"   "+data);
     Main.addData(data);
 });

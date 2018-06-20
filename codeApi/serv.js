@@ -104,15 +104,19 @@ myRouter.route('/api/:capt/last')
 })
 
 .post(function(req,res){
-    if(isIn(dbManager.availableCapteurs, req.params.capt.toString())){
-        reqNumber++;
-        var c = function(data){
-            res.json({message: data});
-        };
-        let data = dbManager.save(req.query.raw_data, req.params.capt.toString(), c);
+    if(req.ip != "::ffff:"+config.server.IpCapteur){
+        res.json({data: '0', error: "Adresse ip non autorisée"})
     }else{
-        newCapteurs(req.params.capt.toString());
-        res.json({data: '0', error: "Ce capteur n'existe pas."});
+        if(isIn(dbManager.availableCapteurs, req.params.capt.toString())){
+            reqNumber++;
+            var c = function(data){
+                res.json({message: data});
+            };
+            let data = dbManager.save(req.query.raw_data, req.params.capt.toString(), c);
+        }else{
+            newCapteurs(req.params.capt.toString());
+            res.json({data: '0', error: "Ce capteur n'existe pas."});
+        }
     }
 })
 //endregion
@@ -772,7 +776,7 @@ myRouter.route('/api/:capt/skewness/:freq/:number-:e')
                 taba.push( [skewness( done( data, fuck1.startOf( req.params.freq ), fuck2.endOf( req.params.freq ) ) ), req.params.freq, now.format(format) ]);
                 now = now.subtract( 1, req.params.freq );
             }
-            res.json({data: taba});
+            res.json({data: taba}); 
             
         };
         reqNumber++;
