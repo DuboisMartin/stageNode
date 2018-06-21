@@ -6,6 +6,20 @@ var config = require('config.json')('../configReal.json');
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
 class Manager{
+
+    CHECKSUM(hexstring) {
+    
+        var s = hexstring.match(/../g);
+        var sum = 0;
+        s.forEach(function (hexbyte) {
+            var n = 1 * ('0x' + hexbyte); // convert hex to number
+            sum += n;
+        });
+        sum = (sum & 255).toString(16);
+        if (sum.length % 2)
+            sum = '0' + sum;
+        return sum;
+    }
     constructor(ip){
         console.log(":::"+ip);
         this.ip = ip;
@@ -54,7 +68,16 @@ class Manager{
 
     send(){
         console.log("asked to send data : "+ this.getdata);
-        var src = this.getdata.substr;
+
+        var cheh = this.getdata;
+        console.log(this.CHECKSUM(Buffer(cheh).toString('hex')));
+        
+        var ck = cheh[0].charCodeAt(0);
+        for(let i = 0; i < cheh.length; i++){
+            ck = ck ^ cheh[i].charCodeAt(0);
+        }
+        console.log(ck);
+
         var tab = new Array();
         tab = this.getdata.substr(2, 100).substr(0, this.getdata.substr(2, 100).length-5).split(';');
         for(var i = 0; i < tab.length-1; i++){

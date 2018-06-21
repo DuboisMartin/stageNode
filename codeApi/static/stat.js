@@ -37,7 +37,11 @@ document.querySelectorAll('input[id^="defaultCheck"]').forEach(element => {
 });
 
 function createReq(capt, opt, freq, time){
-    var req = "https://upjv.edt.ovh/api/"+capt+"/";
+    console.log(capt);
+    console.log(opt);
+    console.log(freq);
+    console.log(time);
+    var req = "api/"+capt+"/";
     
     if(opt == 'Moyenne'){
         req+="average/";
@@ -130,12 +134,12 @@ document.getElementsByName('LoadStat')[0].addEventListener('click', function(){
         test.datasets[i].fill = false;
         test.datasets[i].data = [];
         
-        $.get(createReq(selectedCapteursTab[i].value, option, freq, time), function( dt ){
+        $.get(createReq(selectedCapteursTab[i].value, option[i], freq[i], time), function( dt ){
             var boolBoucle = false;
             if(StatChart.data.labels.length == 0 ){
                 boolBoucle = true;
             }
-            
+            console.log("DT\n\r"+dt);
             for(var j = 0; j < dt.data.length; j++){
                 if(boolBoucle == true){
                     StatChart.data.labels.push(dt.data[j][2])
