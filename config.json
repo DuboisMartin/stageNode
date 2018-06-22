@@ -18,20 +18,6 @@
 	},
 	"capteurs": [
 		{
-			"id": "001",
-			"alias": "temp",
-			"description": "temperature sensor",
-			"unit": "celcius deg",
-			"etc": "and so on"
-		},
-		{
-			"id": "002",
-			"alias": "bla",
-			"description": "blabla",
-			"unit": "bla",
-			"etc": "blablabla"
-		},
-		{
 			"id": "010",
 			"alias": "aze",
 			"description": "aze",

@@ -58,7 +58,7 @@ function createReq(capt, opt, freq, time){
     }
 
     if(freq == "all"){
-        req+="";
+        req+="from/";
     }else if(freq == "day"){
         req+="day/";
     }else if(freq == "month"){
