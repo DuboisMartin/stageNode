@@ -43,18 +43,20 @@ function createReq(capt, opt, freq, time){
     console.log(time);
     var req = "api/"+capt+"/";
     
-    if(opt == 'Moyenne'){
-        req+="average/";
-    }else if(opt == "Max"){
-        req+="max/";
-    }else if(opt == "Min"){
-        req+="min/";
-    }else if(opt == "Ecart_type"){
-        req+="ecart/";
-    }else if(opt == "Variance"){
-        req+="variance/";
-    }else if(opt == "Skewness"){
-        req+="skewness/";
+    if(freq != "all"){
+        if(opt == 'Moyenne'){
+            req+="average/";
+        }else if(opt == "Max"){
+            req+="max/";
+        }else if(opt == "Min"){
+            req+="min/";
+        }else if(opt == "Ecart_type"){
+            req+="ecart/";
+        }else if(opt == "Variance"){
+            req+="variance/";
+        }else if(opt == "Skewness"){
+            req+="skewness/";
+        }
     }
 
     if(freq == "all"){
