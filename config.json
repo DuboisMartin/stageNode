@@ -10,7 +10,7 @@
 		"server_port": "80",
 		"server_host": "localhost",
 		"req_timer": "30000",
-		"IpCapteur": "127.0.0.1"
+		"IpCapteur": "194.57.109.86"
 	},
 	"serial": {
 		"serial_path": "/dev/ttyACM0",

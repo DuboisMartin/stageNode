@@ -8,9 +8,9 @@
 	},
 	"server": {
 		"server_port": "80",
-		"server_host": "10.16.33.102",
+		"server_host": "194.57.109.86",
 		"req_timer": "30000",
-		"IpCapteur": "127.0.0.1"
+		"IpCapteur": "194.57.109.86"
 	},
 	"serial": {
 		"serial_path": "/dev/ttyACM0",
@@ -34,70 +34,63 @@
 		"002",
 		{
 			"id": "010",
-			"alias": "aze",
+			"alias": "TensAlim",
 			"description": "aze",
 			"unit": "aze",
 			"etc": "aze"
 		},
 		{
 			"id": "011",
-			"alias": "aze",
+			"alias": "TempIntTerma",
 			"description": "aze",
 			"unit": "aze",
 			"etc": "aze"
 		},
 		{
 			"id": "012",
-			"alias": "aze",
+			"alias": "TeSurface",
 			"description": "aze",
 			"unit": "aze",
 			"etc": "aze"
 		},
 		{
 			"id": "013",
-			"alias": "aze",
+			"alias": "RelHumidity",
 			"description": "aze",
 			"unit": "aze",
 			"etc": "aze"
 		},
 		{
 			"id": "014",
-			"alias": "aze",
-			"description": "aze",
-			"unit": "aze",
-			"etc": "aze"
-		},
-		{
-			"id": "014",
-			"alias": "aze",
+			"alias": "AirTemp",
 			"description": "aze",
 			"unit": "aze",
 			"etc": "aze"
 		},
 		{
 			"id": "015",
-			"alias": "aze",
+			"alias": "WindSpeed",
 			"description": "aze",
 			"unit": "aze",
 			"etc": "aze"
 		},
 		{
 			"id": "016",
-			"alias": "aze",
+			"alias": "WindDir",
 			"description": "aze",
 			"unit": "aze",
 			"etc": "aze"
 		},
 		{
 			"id": "017",
-			"alias": "aze",
+			"alias": "DirectRad",
 			"description": "aze",
 			"unit": "aze",
 			"etc": "aze"
 		},
 		{
 			"id": "018",
-			"alias": "aze",
+			"alias": "SunShine",
 			"description": "aze",
 			"unit": "aze",
 			"etc": "aze"
