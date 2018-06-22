@@ -104,6 +104,8 @@ myRouter.route('/api/:capt/last')
 })
 
 .post(function(req,res){
+    console.log("Adresse ip : "+req.ip);
+    console.log("::ffff:"+config.serveur.IpCapteur);
     if(req.ip != "::ffff:"+config.server.IpCapteur){
         res.json({data: '0', error: "Adresse ip non autorisée"})
     }else{

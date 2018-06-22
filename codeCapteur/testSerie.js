@@ -4,7 +4,7 @@ if(process.argv.length < 3){
 }else{
     console.log("IP : "+process.argv[2]);
 }
-
+var ip = "138.68.79.177"
 var serialport = require("serialport");
 var SerialPort = serialport.SerialPort;
 var moment = require('moment');
