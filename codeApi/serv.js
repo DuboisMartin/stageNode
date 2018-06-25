@@ -143,7 +143,6 @@ myRouter.route('/api/:capt/:idD-:idF')
 });
 
 myRouter.route('/api/:capt/tail/:number')
-
 .get(function(req, res){
     if(isIn(dbManager.availableCapteurs, req.params.capt.toString())){
         var c = function(data){
@@ -164,10 +163,14 @@ myRouter.route('/api/:capt/from/:number-:e')
 .get(function(req, res){
     if(isIn(dbManager.availableCapteurs, req.params.capt.toString())){
         var c = function(data){
-            res.json(data);
+            var taba = new Array();
+            data.forEach(function(element) {
+                taba.push(element)
+            })
+            res.json({data: taba});
         };
         reqNumber++;
-        if( isNaN(Number(req.params.number)) || !(req.params.e in {sec: '', min: '', hour: '', day: '', month: '', year: ''}) ){
+        if( isNaN(Number(req.params.number)) || !(req.params.e in {sec: '', min: '', hour: '', day: '', week: '',  month: '', year: ''}) ){
             res.json({data: "Error in params sended."});
         }else{
             dbManager.justExec(c, "SELECT id, data FROM "+config.bdd.table_name+" WHERE id_capteur ='"+ req.params.capt +"' AND timestamp BETWEEN '"+moment_timezone().tz("Europe/Paris").subtract(Number(req.params.number), req.params.e).format("YYYY-MM-DD HH:mm:ss")+"' AND '"+moment_timezone().tz("Europe/Paris").format("YYYY-MM-DD HH:mm:ss")+"';");
@@ -194,7 +197,7 @@ myRouter.route('/api/:capt/average/:number-:e')
             }
         };
         reqNumber++;
-        if( isNaN(Number(req.params.number)) || !(req.params.e in {sec: '', min: '', hour: '', day: '', month: '', year: ''}) ){
+        if( isNaN(Number(req.params.number)) || !(req.params.e in {sec: '', min: '', hour: '', day: '', week: '',  month: '', year: ''}) ){
             res.json({data: "Error in params sended."});
         }else{
             dbManager.justExec(c, "SELECT id, data FROM "+config.bdd.table_name+" WHERE id_capteur = "+ req.params.capt +" AND timestamp BETWEEN '"+moment_timezone().tz("Europe/Paris").subtract(Number(req.params.number), req.params.e).format("YYYY-MM-DD HH:mm:ss")+"' AND '"+moment_timezone().tz("Europe/Paris").format("YYYY-MM-DD HH:mm:ss")+"';");
@@ -219,7 +222,7 @@ myRouter.route('/api/:capt/min/:number-:e')
             }
         };
         reqNumber++;
-        if( isNaN(Number(req.params.number)) || typeof Number(req.params.number) != "number" || !(req.params.e in {sec: '', min: '', hour: '', day: '', month: '', year: ''}) ){
+        if( isNaN(Number(req.params.number)) || typeof Number(req.params.number) != "number" || !(req.params.e in {sec: '', min: '', hour: '', day: '', week: '',  month: '', year: ''}) ){
             res.json({data: '0', error: "Error in params sended."});
         }else{
             dbManager.justExec(c, "SELECT id, data FROM "+config.bdd.table_name+" WHERE id_capteur ='"+ req.params.capt +"' AND timestamp BETWEEN '"+moment_timezone().tz("Europe/Paris").subtract(Number(req.params.number), req.params.e).format("YYYY-MM-DD HH:mm:ss")+"' AND '"+moment_timezone().tz("Europe/Paris").format("YYYY-MM-DD HH:mm:ss")+"';");
@@ -244,7 +247,7 @@ myRouter.route('/api/:capt/max/:number-:e')
             }
         };
         reqNumber++;
-        if( isNaN(Number(req.params.number)) || !(req.params.e in {sec: '', min: '', hour: '', day: '', month: '', year: ''}) ){
+        if( isNaN(Number(req.params.number)) || !(req.params.e in {sec: '', min: '', hour: '', day: '', week: '',  month: '', year: ''}) ){
             res.json({data: '0', error: "Error in params sended."});
         }else{
             dbManager.justExec(c, "SELECT id, data FROM "+config.bdd.table_name+" WHERE id_capteur ="+ req.params.capt +" AND timestamp BETWEEN '"+moment_timezone().tz("Europe/Paris").subtract(Number(req.params.number), req.params.e).format("YYYY-MM-DD HH:mm:ss")+"' AND '"+moment_timezone().tz("Europe/Paris").format("YYYY-MM-DD HH:mm:ss")+"';");
@@ -271,7 +274,7 @@ myRouter.route('/api/:capt/variance/:number-:e')
             }
         };
         reqNumber++;
-        if( isNaN(Number(req.params.number)) || !(req.params.e in {sec: '', min: '', hour: '', day: '', month: '', year: ''}) ){
+        if( isNaN(Number(req.params.number)) || !(req.params.e in {sec: '', min: '', hour: '', day: '', week: '',  month: '', year: ''}) ){
             res.json({data: '0', error: "Error in params sended."});
         }else{
             dbManager.justExec(c, "SELECT id, data FROM "+config.bdd.table_name+" WHERE id_capteur ='"+ req.params.capt +"' AND timestamp BETWEEN '"+moment_timezone().tz("Europe/Paris").subtract(Number(req.params.number), req.params.e).format("YYYY-MM-DD HH:mm:ss")+"' AND '"+moment_timezone().tz("Europe/Paris").format("YYYY-MM-DD HH:mm:ss")+"';");
@@ -298,7 +301,7 @@ myRouter.route('/api/:capt/ecart/:number-:e')
             }
         };
         reqNumber++;
-        if( isNaN(Number(req.params.number)) || !(req.params.e in {sec: '', min: '', hour: '', day: '', month: '', year: ''}) ){
+        if( isNaN(Number(req.params.number)) || !(req.params.e in {sec: '', min: '', hour: '', day: '', week: '',  month: '', year: ''}) ){
             res.json({data: '0', error: "Error in params sended."});
         }else{
             dbManager.justExec(c, "SELECT id, data FROM "+config.bdd.table_name+" WHERE id_capteur ='"+ req.params.capt +"' AND timestamp BETWEEN '"+moment_timezone().tz("Europe/Paris").subtract(Number(req.params.number), req.params.e).format("YYYY-MM-DD HH:mm:ss")+"' AND '"+moment_timezone().tz("Europe/Paris").format("YYYY-MM-DD HH:mm:ss")+"';");
@@ -325,7 +328,7 @@ myRouter.route('/api/:capt/skewness/:number-:e')
             }
         };
         reqNumber++;
-        if( isNaN(Number(req.params.number)) || !(req.params.e in {sec: '', min: '', hour: '', day: '', month: '', year: ''}) ){
+        if( isNaN(Number(req.params.number)) || !(req.params.e in {sec: '', min: '', hour: '', day: '', week: '',  month: '', year: ''}) ){
             res.json({data: '0', error: "Error in params sended."});
         }else{
             dbManager.justExec(c, "SELECT id, data FROM "+config.bdd.table_name+" WHERE id_capteur ='"+ req.params.capt +"' AND timestamp BETWEEN '"+moment_timezone().tz("Europe/Paris").subtract(Number(req.params.number), req.params.e).format("YYYY-MM-DD HH:mm:ss")+"' AND '"+moment_timezone().tz("Europe/Paris").format("YYYY-MM-DD HH:mm:ss")+"';");
