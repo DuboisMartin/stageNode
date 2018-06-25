@@ -127,7 +127,6 @@ myRouter.route('/api/:capt/:idD-:idF')
 .get(function(req, res){
     if(isIn(dbManager.availableCapteurs, req.params.capt.toString()))
     {
-        let json = [{}]; 
         var c = function(data){
             res.json(data);
         };
@@ -165,7 +164,7 @@ myRouter.route('/api/:capt/from/:number-:e')
         var c = function(data){
             var taba = new Array();
             data.forEach(function(element) {
-                taba.push(element)
+                taba.push({0: element.data, 1: element.id})
             })
             res.json({data: taba});
         };

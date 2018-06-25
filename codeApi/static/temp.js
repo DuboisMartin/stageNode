@@ -1,6 +1,6 @@
 var temp = document.getElementById("GraphTemp");
 var don;
-$.get("api/001/0-100", function( data ){
+$.get("api/014/from/1-day", function( data ){
     don = data;
 
     var bool = true;
@@ -13,13 +13,14 @@ $.get("api/001/0-100", function( data ){
     test.datasets[0].borderWidth = 2;
     test.datasets[0].fill = false;
     test.datasets[0].data = [];
-    for(var i =0; i < data.length; i++){
-        test.datasets[0].data[i] = data[i].data;
+    console.log(data.data[0][0])
+    for(var i =0; i < data.data.length; i++){
+        test.datasets[0].data[i] = data.data[i][0];
         if(bool){
-            test.labels[i] = data[i].id;
+            test.labels[i] = data.data[i][1];
             bool = !bool;
         }else {
-            test.labels[i] = data[i].id = "";
+            test.labels[i] = "";
             bool = !bool;
         }
     }
