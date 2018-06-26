@@ -3,7 +3,7 @@ const app = electron.app;
 const BrowserWindow = electron.BrowserWindow;
 const Tray = electron.Tray;
 var ipcMain = require('electron').ipcMain;
-const socket = require('socket.io-client')('http://127.0.0.1:3000');
+const socket = require( 'socket.io-client' )( 'https://upjv.edt.ovh', { rejectUnauthorized: false } );
 const https = require('https');
 const querystring = require('querystring');
 
@@ -21,9 +21,7 @@ function createLogWindow() {
 		maxWidth: 1200,
 		maxHeight: 800,
 		icon: 'mis.png',
-		title:'Utilitaire API',
-		fullscreenable: false,
-		resizable: false
+		title: 'Utilitaire API'
 	});
 
 	logWindow.loadURL('file:'+__dirname+'/assets/html/index.html');
