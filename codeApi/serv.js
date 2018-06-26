@@ -9,10 +9,6 @@ var db = require("./databaseManager");
 const fs = require('fs');
 var stat = require('../codeEntrainement/stat.js');
 stat.skewness = require('compute-skewness');
-const server = require('http').createServer();
-
-var socket_client;
-const io = require('socket.io').listen(server);
 
 var config = require('config.json')('../config.json');
 
@@ -805,26 +801,30 @@ function newCapteurs(capt) {
 
 app.use(myRouter);
 
+var https = require('https');
 if(cert){
-    var https = require('https');
-    https.createServer({
+    var serv = https.createServer({
         key : fs.readFileSync('realKey.pem'),
-        cert: fs.readFileSync('realCert.pem')
-    }, app).listen(443);
+        cert: fs.readFileSync('realCert.pem'),
+        ca: [
+            fs.readFileSync('root.pem', 'utf8'),
+            fs.readFileSync('chain.pem', 'utf8')
+        ]
+    }, app);
 }else{
-    var https = require('https');
-    https.createServer({
+    var serv = https.createServer({
         key : fs.readFileSync('key.pem'),
         cert: fs.readFileSync('cert.pem')
-    }, app).listen(443);
+    }, app);
 }
 
-
-/*https.createServer(function(req, res) {
-}, app).listen(80);*/
+const io = require('socket.io').listen(serv, {
+    allowUpgrades: true,
+    transports: ['websocket', 'flashsocket', 'polling'],
+    'log level': 1
+});
 
 io.sockets.on('connection', function (socket) {
-    socket_client = socket;
     console.log("Un client est connecté !");
     socket.on('log', function(msg) {
         console.log(msg);
@@ -836,4 +836,4 @@ io.sockets.on('connection', function (socket) {
     });
 });
 
-server.listen(3000);
+serv.listen(443)

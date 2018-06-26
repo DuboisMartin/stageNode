@@ -3,11 +3,11 @@ const app = electron.app;
 const BrowserWindow = electron.BrowserWindow;
 const Tray = electron.Tray;
 var ipcMain = require('electron').ipcMain;
-const socket = require( 'socket.io-client' )( 'https://upjv.edt.ovh', { rejectUnauthorized: false } );
+const socket = require( 'socket.io-client' )( 'https://upjv.edt.ovh:443', { rejectUnauthorized: false } );
 const https = require('https');
 const querystring = require('querystring');
 
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+//process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
 let logWindow;
 let mainWindow;
