@@ -345,7 +345,7 @@ myRouter.route('/api/:capt/skewness/:number-:e')
 //Routes utilisées pour l'utilitaire
 myRouter.route('/api/util/config')
 .get(function(req, res) {
-    if(ifAuth(req.ip)){
+    if(isAuth(req.ip)){
         var c = function(data){
             if(data.length == 0){
                 res.json({data: '0', error: "No data."});
@@ -362,7 +362,7 @@ myRouter.route('/api/util/config')
 
 myRouter.route('/api/util/config/current')
 .get(function(req, res) {
-    if(ifAuth(req.ip)){
+    if(isAuth(req.ip)){
         var c = function(data) {
             if(data.length == 0){
                 res.json({data: '0', error: "No data."});
@@ -379,7 +379,7 @@ myRouter.route('/api/util/config/current')
 
 myRouter.route('/api/util/config/:id')
 .get(function(req, res) {
-    if(ifAuth(req.ip)){
+    if(isAuth(req.ip)){
         var c = function(data){
             console.timeEnd('dbneed');
             if(data.length == 0){
@@ -399,7 +399,7 @@ myRouter.route('/api/util/config/:id')
 
 myRouter.route('/api/util/config/:id/delete')
 .get(function(req, res) {
-    if(ifAuth(req.ip)){
+    if(isAuth(req.ip)){
         var c = function(data){
             console.timeEnd('dbdelete');
             if(data.length == 0){
@@ -420,7 +420,7 @@ myRouter.route('/api/util/config/:id/delete')
 
 myRouter.route('/api/util/config/:id/use')
 .get(function(req, res) {
-    if(ifAuth(req.ip)){
+    if(isAuth(req.ip)){
         var save = function(data){
             if(data.length == 0){
                 res.json({data: '0', error: "Not in database."});
@@ -445,7 +445,7 @@ myRouter.route('/api/util/config/:id/use')
 
 myRouter.route('/api/util/config/new')
 .post(function(req, res) {
-    if(ifAuth(req.ip)){
+    if(isAuth(req.ip)){
         reqNumber++;
         var old = require('../config.json')
         old.capteurs[old.capteurs.length] = {
@@ -863,6 +863,7 @@ var listIpConnected = new Map()
 io.sockets.on('connection', function (socket) {
     console.log("Un client est connecté !");
     socket.on('log', function(msg) {
+        setTimeout(() => socket.disconnect(true), 5000);
         console.log(msg);
         if(msg == "Martin:Dubois"){
             socket.emit('log-rep', "OK");
@@ -870,6 +871,9 @@ io.sockets.on('connection', function (socket) {
         }else{ 
             socket.emit('log-rep', "NOP");
         }
+    });
+    socket.on('disconnect', function(){
+        listIpConnected.delete(socket.id);
     });
 });
 
