@@ -18,6 +18,7 @@
                         <input type="password" class="form-control" id="PASSWORD" placeholder="Password">
                         <input type="submit" id="send" class="btn btn-lg btn-primary btn-block" value="Connexion" onclick='return false;'>
                     </form>
+                    <input type="text" class="form-control" id="HOST" placeholder="Ip du serveur">
                 </div>
             </div>
         </div>
@@ -31,7 +32,14 @@
         var ipcRenderer = require('electron').ipcRenderer; 
         document.getElementById('send').addEventListener('click', function(){
             console.log("Activated");
-            ipcRenderer.send('send', document.getElementById('LOGIN').value+":"+document.getElementById('PASSWORD').value);
+            if(document.getElementById('HOST').value != "")
+                ipcRenderer.send('send', document.getElementById('LOGIN').value+":"+document.getElementById('PASSWORD').value+':'+document.getElementById('HOST').value);
+        });
+        ipcRenderer.send('askHost');
+        ipcRenderer.on('host', (s, data) => {
+            console.log(data);
+            if(data != 'NOP')
+                document.getElementById('HOST').value=data;
         });
     </script>
 </html>

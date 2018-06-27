@@ -7,8 +7,6 @@
 		"sql_password": ""
 	},
 	"server": {
-		"server_port": "80",
-		"server_host": "194.57.109.86",
 		"req_timer": "30000",
 		"IpCapteur": "194.57.109.86"
 	},

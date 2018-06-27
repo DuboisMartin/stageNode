@@ -3,9 +3,12 @@ const app = electron.app;
 const BrowserWindow = electron.BrowserWindow;
 const Tray = electron.Tray;
 var ipcMain = require('electron').ipcMain;
-const socket = require( 'socket.io-client' )( 'https://upjv.edt.ovh:443', { rejectUnauthorized: false } );
 const https = require('https');
 const querystring = require('querystring');
+const Config = require('electron-config');
+const config = new Config();
+
+config.set('unicorn', '🦄');
 
 //process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
@@ -23,19 +26,45 @@ function createLogWindow() {
 		icon: 'mis.png',
 		title: 'Utilitaire API'
 	});
-
+	console.log(app.getPath("appData"));
 	logWindow.loadURL('file:'+__dirname+'/assets/html/index.html');
 
 	logWindow.on('closed', () => {
 		logWindow = null
 	});
-
+	ipcMain.on('askHost', function(event, arg) {
+		if(config.has('host'))
+			event.sender.send('host', config.get('host'));
+		else
+			event.sender.send('host', 'NOP');
+		})
 	ipcMain.on('send', function(event, arg) {
 		console.log(arg);
+		config.set('host',arg.split(':')[2]);
+		const socket = require( 'socket.io-client' )( 'https://'+config.get('host')+':443', { rejectUnauthorized: false } );
 		socket.open();
-		socket.emit('log', arg);
+		socket.emit('log', arg.split(':')[0]+':'+arg.split(':')[1]);
+		
+		socket.on('log-rep', function(rep){
+			console.log(rep);
+			if(rep == 'OK'){
+				d();
+			}
+		});
+		
+		socket.on('New-Capteurs', function(data) {
+			console.log("New capteurs.")
+			mainWindow.webContents.executeJavaScript("new Notification('Nouveaux capteur !', {body: 'Un nouveaux capteurs a était détecter!'});var x = document.getElementById('idSelect'); var bool = false;for(var i = 0; i<x.options.length; i++){if(x.options[i].value == '"+data+"'){bool = true;}}if(!bool){var y = document.createElement('option');y.text = '"+data+"';y.selected='selected';x.add(y);}");
+		});
 	});
+	function d() {
+		logWindow.hide();
+		createMainWindow();
+		logWindow.close();
+	}
 }
+
+
 
 app.on('ready', createLogWindow);
 
@@ -51,19 +80,7 @@ app.on('activate', () => {
 	}
 });
 
-socket.on('log-rep', function(rep){
-	console.log(rep);
-	if(rep == 'OK'){
-		logWindow.hide();
-		createMainWindow();
-		logWindow.close();
-	}
-});
 
-socket.on('New-Capteurs', function(data) {
-	console.log("New capteurs.")
-	mainWindow.webContents.executeJavaScript("new Notification('Nouveaux capteur !', {body: 'Un nouveaux capteurs a était détecter!'});var x = document.getElementById('idSelect'); var bool = false;for(var i = 0; i<x.options.length; i++){if(x.options[i].value == '"+data+"'){bool = true;}}if(!bool){var y = document.createElement('option');y.text = '"+data+"';y.selected='selected';x.add(y);}");
-});
 
 function createMainWindow() {
 	mainWindow = new BrowserWindow({
@@ -85,7 +102,7 @@ function createMainWindow() {
 	});
 
 	function loadPage(event){
-		https.get("https://127.0.0.1/api/util/config", function(resp) {
+		https.get("https://"+config.get('host')+"/api/util/config", function(resp) {
 			let data = '';
 			resp.on('data', function(chunk) {
 				data += chunk;
@@ -116,7 +133,7 @@ function createMainWindow() {
 		if(action == "See") {
 			console.time("dbneed");
 			console.log(Date.now());
-			https.get("https://127.0.0.1/api/util/config/"+num, function(resp) {
+			https.get("https://"+config.get('host')+"/api/util/config/"+num, function(resp) {
 				let data = '';
 				resp.on('data', function(chunk) {
 					console.log('+');
@@ -132,7 +149,7 @@ function createMainWindow() {
 		}else if(action == "Save") {
 			console.time("dbSave");
 			console.log(Date.now());
-			https.get("https://127.0.0.1/api/util/config/"+num+"/use/", function(resp) {
+			https.get("https://"+config.get('host')+"/api/util/config/"+num+"/use/", function(resp) {
 				let data= '';
 				resp.on('data', function(chunk) {
 					data += chunk;
@@ -155,7 +172,7 @@ function createMainWindow() {
 			});
 			console.log(choice);
 			if(choice == 0){
-				https.get("https://127.0.0.1/api/util/config/"+num+"/delete/", function(resp) {
+				https.get("https://"+config.get('host')+"/api/util/config/"+num+"/delete/", function(resp) {
 					let data = '';
 					resp.on('data', function(chunk) {
 						data += chunk;
@@ -177,7 +194,7 @@ function createMainWindow() {
 	}
 	
 	ipcMain.on('SeeCapteurs', function(event, arg) {
-		https.get("https://127.0.0.1/api/util/config/current", function(resp) {
+		https.get("https://"+config.get('host')+"/api/util/config/current", function(resp) {
 			let data = '';
 			resp.on('data', function(chunk) {
 				data += chunk;
@@ -198,7 +215,7 @@ function createMainWindow() {
 
 	ipcMain.on('validCapteur', function(event, arg) {
 		var options = {
-			hostname: '127.0.0.1',
+			hostname: config.get('host'),
 			path: 443,
 			path: '/api/util/config/new?raw_data='+arg,
 			method: 'POST',
