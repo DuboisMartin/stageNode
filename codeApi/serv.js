@@ -22,7 +22,7 @@ moment.locale('fr');
 var app = express(); 
 
 const pug = require('pug');
-const compiledFunction = pug.compileFile('template.pug');
+const compiledFunction = pug.compileFile('static/template.pug');
 app.set('view engine', 'pug');
 
 var reqNumber = 0;
@@ -42,6 +42,15 @@ function makelist(){
         }
     }
     return list;
+}
+
+function isAuth(ip){
+    for (var valeur of listIpConnected.values()){
+        if(valeur = ip){
+            return true;
+        }
+    }
+    return false;
 }
 
 function isIn(tab, data){
@@ -80,7 +89,7 @@ fs.readdir('static/', (err, files) => {
 })
 
 app.get('/contenuStat.html', function(req, res) {
-    res.render('../template', {tab: dbManager.availableCapteurs, tabAlias: dbManager.availableCapteursAlias});
+    res.render(__dirname+'/static/template', {tab: dbManager.availableCapteurs, tabAlias: dbManager.availableCapteursAlias});
 });
 
 myRouter.route('/api').get(function(req, res){ console.log(req.ip); reqNumber ++; res.json({data : "Hello world!"}); });
@@ -336,103 +345,126 @@ myRouter.route('/api/:capt/skewness/:number-:e')
 //Routes utilisées pour l'utilitaire
 myRouter.route('/api/util/config')
 .get(function(req, res) {
-    var c = function(data){
-        if(data.length == 0){
-            res.json({data: '0', error: "No data."});
-        }else{
-            res.json(data);
-        }
-    };
-    reqNumber++;
-    dbManager.justExec(c, "SELECT id, hash, timestamp, used FROM test;");
+    if(ifAuth(req.ip)){
+        var c = function(data){
+            if(data.length == 0){
+                res.json({data: '0', error: "No data."});
+            }else{
+                res.json(data);
+            }
+        };
+        reqNumber++;
+        dbManager.justExec(c, "SELECT id, hash, timestamp, used FROM test;");
+    }else{
+        res.json({message: 'error',error: 'Adresse ip non autorisée'})
+    }
 });
 
 myRouter.route('/api/util/config/current')
 .get(function(req, res) {
-    var c = function(data) {
-        if(data.length == 0){
-            res.json({data: '0', error: "No data."});
-        }else{
-            res.json(data);
-        }
-    };
-    reqNumber++;
-    dbManager.justExec(c, "SELECT * FROM test WHERE used = true;");
+    if(ifAuth(req.ip)){
+        var c = function(data) {
+            if(data.length == 0){
+                res.json({data: '0', error: "No data."});
+            }else{
+                res.json(data);
+            }
+        };
+        reqNumber++;
+        dbManager.justExec(c, "SELECT * FROM test WHERE used = true;");
+    }else{
+        res.json({message: 'error',error: 'Adresse ip non autorisée'})
+    }
 });
 
 myRouter.route('/api/util/config/:id')
 .get(function(req, res) {
-    var c = function(data){
-        console.timeEnd('dbneed');
-        if(data.length == 0){
-            res.json({data: '0', error: "No data."});
-        }else{
-            res.json(data);
+    if(ifAuth(req.ip)){
+        var c = function(data){
+            console.timeEnd('dbneed');
+            if(data.length == 0){
+                res.json({data: '0', error: "No data."});
+            }else{
+                res.json(data);
+            }
         }
+        console.log(Date.now());
+        reqNumber++;
+        console.time('dbneed');
+        dbManager.justExec(c, "SELECT id, raw_data, used FROM test where id = '"+req.params.id+"' ;");
+    }else{
+        res.json({message: 'error',error: 'Adresse ip non autorisée'})
     }
-    console.log(Date.now());
-    reqNumber++;
-    console.time('dbneed');
-    dbManager.justExec(c, "SELECT id, raw_data, used FROM test where id = '"+req.params.id+"' ;");
-
 });
 
 myRouter.route('/api/util/config/:id/delete')
 .get(function(req, res) {
-    var c = function(data){
-        console.timeEnd('dbdelete');
-        if(data.length == 0){
-            res.json({data: '0', error: "No data."});
-        }else{
-            console.log(data);
-            res.json(data);
+    if(ifAuth(req.ip)){
+        var c = function(data){
+            console.timeEnd('dbdelete');
+            if(data.length == 0){
+                res.json({data: '0', error: "No data."});
+            }else{
+                console.log(data);
+                res.json(data);
+            }
         }
+        console.log(Date.now());
+        reqNumber++;
+        console.time('dbdelete');
+        dbManager.justExec(c, "DELETE FROM test WHERE id ='"+req.params.id+"' ;");
+    }else{
+        res.json({message: 'error',error: 'Adresse ip non autorisée'})
     }
-    console.log(Date.now());
-    reqNumber++;
-    console.time('dbdelete');
-    dbManager.justExec(c, "DELETE FROM test WHERE id ='"+req.params.id+"' ;");
 })
 
 myRouter.route('/api/util/config/:id/use')
 .get(function(req, res) {
-    var save = function(data){
-        if(data.length == 0){
-            res.json({data: '0', error: "Not in database."});
-        }else{
-            var raw_data = String(data[0].raw_data).split(',');
-            fs.writeFile('../config.json', raw_data, (err) => {
-                if (err) throw err;
-                console.log('The file has been saved!');
-                config = require('config.json')('../config.json');
-                dbManager.updateConfig();
-                dbManager.updateList(makelist());
-                res.json({data: '0', good: "Done"});
-            });
+    if(ifAuth(req.ip)){
+        var save = function(data){
+            if(data.length == 0){
+                res.json({data: '0', error: "Not in database."});
+            }else{
+                var raw_data = String(data[0].raw_data).split(',');
+                fs.writeFile('../config.json', raw_data, (err) => {
+                    if (err) throw err;
+                    console.log('The file has been saved!');
+                    config = require('config.json')('../config.json');
+                    dbManager.updateConfig();
+                    dbManager.updateList(makelist());
+                    res.json({data: '0', good: "Done"});
+                });
+            }
         }
+        reqNumber++;
+        dbManager.justExec(save, "SELECT raw_data FROM test WHERE id='"+req.params.id+"' ;");
+    }else{
+        res.json({message: 'error',error: 'Adresse ip non autorisée'})
     }
-    reqNumber++;
-    dbManager.justExec(save, "SELECT raw_data FROM test WHERE id='"+req.params.id+"' ;");
 })
 
 myRouter.route('/api/util/config/new')
 .post(function(req, res) {
-    reqNumber++;
-    var old = require('../config.json')
-    old.capteurs[old.capteurs.length] = {
-        "id": req.query.raw_data.split(':')[0],
-        "alias": req.query.raw_data.split(':')[1],
-        "description": req.query.raw_data.split(':')[2],
-        "unit": req.query.raw_data.split(':')[3],
-        "etc": req.query.raw_data.split(':')[4]
+    if(ifAuth(req.ip)){
+        reqNumber++;
+        var old = require('../config.json')
+        old.capteurs[old.capteurs.length] = {
+            "id": req.query.raw_data.split(':')[0],
+            "alias": req.query.raw_data.split(':')[1],
+            "description": req.query.raw_data.split(':')[2],
+            "unit": req.query.raw_data.split(':')[3],
+            "etc": req.query.raw_data.split(':')[4]
+        }
+        fs.writeFile('../config.json', JSON.stringify(old, null, '\t'), 'utf-8', function callback(err){
+            if (err) throw err;
+            config = require('config.json')('../config.json');
+            dbManager.updateConfig();
+            dbManager.updateList(makelist());
+            res.json({message: 'OK.'})
+        });
+    }else{
+        res.json({message: 'error',error: 'Adresse ip non autorisée'})
     }
-    fs.writeFile('../config.json', JSON.stringify(old, null, '\t'), 'utf-8', function callback(err){
-        if (err) throw err;
-        config = require('config.json')('../config.json');
-        dbManager.updateConfig();
-        dbManager.updateList(makelist());
-        res.json({message: 'OK.'})
-    });
 
 });
 //
@@ -821,8 +853,12 @@ if(cert){
 const io = require('socket.io').listen(serv, {
     allowUpgrades: true,
     transports: ['websocket', 'flashsocket', 'polling'],
-    'log level': 1
+    'log level': 1,
+    pingTimeout: '300000',
+    pingInterval: '1000'
 });
+
+var listIpConnected = new Map()
 
 io.sockets.on('connection', function (socket) {
     console.log("Un client est connecté !");
@@ -830,7 +866,8 @@ io.sockets.on('connection', function (socket) {
         console.log(msg);
         if(msg == "Martin:Dubois"){
             socket.emit('log-rep', "OK");
-        }else{
+            listIpConnected.set(socket.id, socket.handshake.address.split(':')[3]);
+        }else{ 
             socket.emit('log-rep', "NOP");
         }
     });
