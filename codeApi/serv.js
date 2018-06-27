@@ -80,7 +80,7 @@ fs.readdir('static/', (err, files) => {
 })
 
 app.get('/contenuStat.html', function(req, res) {
-    res.render('../template', {tab: dbManager.availableCapteursAlias});
+    res.render('../template', {tab: dbManager.availableCapteurs, tabAlias: dbManager.availableCapteursAlias});
 });
 
 myRouter.route('/api').get(function(req, res){ console.log(req.ip); reqNumber ++; res.json({data : "Hello world!"}); });
@@ -156,7 +156,7 @@ myRouter.route('/api/:capt/tail/:number')
 
 myRouter.route('/api/:capt/from/:number-:e')
 .get(function(req, res){
-    if(isIn(dbManager.availableCapteurs, req.params.capt.toString())){
+    if( isIn( dbManager.availableCapteurs, req.params.capt.toString() ) ){
         var c = function(data){
             var taba = new Array();
             data.forEach(function(element) {
