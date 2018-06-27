@@ -122,8 +122,15 @@ class databaseManager{
     }
 
     updateList(list){
-        this.availableCapteurs = list;
-        console.log(list); 
+        var listeID = new Array();
+        var listeAlias = new Array();
+        list.forEach(element => {
+           listeID.push(element.split(':')[0]); 
+           listeAlias.push(element.split(':')[1]); 
+        });
+        this.availableCapteurs = listeID;
+        this.availableCapteursAlias = listeAlias
+        console.log(listeID); 
     }
 
     save(data, idCapteur, callback){

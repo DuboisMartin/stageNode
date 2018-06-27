@@ -38,7 +38,7 @@ function makelist(){
     var list = new Array();
     for(var i = 0; i< config.capteurs.length; i++){
         if(config.capteurs[i].id != undefined){
-            list.push(config.capteurs[i].id);
+            list.push(config.capteurs[i].id+':'+config.capteurs[i].alias);
         }
     }
     return list;
@@ -80,7 +80,7 @@ fs.readdir('static/', (err, files) => {
 })
 
 app.get('/contenuStat.html', function(req, res) {
-    res.render('../template', {tab: dbManager.availableCapteurs});
+    res.render('../template', {tab: dbManager.availableCapteursAlias});
 });
 
 myRouter.route('/api').get(function(req, res){ console.log(req.ip); reqNumber ++; res.json({data : "Hello world!"}); });
