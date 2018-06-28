@@ -1,24 +1,25 @@
+//Inclusion de tout les modules nécessaires.
+
 var mysql = require('mysql');
 
-var config = require('config.json')('../config.json');
+//Importation de la configuration.
+var config = require('config.json')('config.json');
 var that;
-function isIn(tab, data){
-    for(var i = 0; i< tab.length; i++){
-        if(tab[i].toString() == data.toString()){
-            return true;
-        }
-    }
-    return false;
-}
+
+
 
 class databaseManager{
+
+    //Fonction qui ce charge de rechargé la configuration.
     updateConfig(){
         this.checkConfig('../config.json', that);
-        config = require('config.json')('../config.json');
+        config = require('config.json')('config.json');
     }
+
+    //Fonction qui se charge de vérifié la configuration.
     checkConfig(config_path, t){
         let that = t;
-        //On importe les librairies nécéssaires
+        //On importe les librairies nécessaires
         let crypto = require('crypto');
         let fs = require('fs');
         let hash = crypto.createHash('sha512');
@@ -36,7 +37,7 @@ class databaseManager{
                     console.log(status.message);
                     return ;
                 }
-                //On recupere la taille du fichier et on creer un buffer de la même taille
+                //On récupère la taille du fichier et on créer un buffer de la même taille
                 var fileSize = getFilesizeInBytes(config_path);
                 var buffer = new Buffer(fileSize);
         
@@ -46,7 +47,7 @@ class databaseManager{
                     hash.update(buffer);
                     let file_hash = hash.digest('hex');
                     
-                    //On recupére le dernier hash dans la base;
+                    //On récupère le dernier hash dans la base
                     var req= "SELECT hash FROM test ORDER BY id;"
                     t.con.query(req, function(e, d){
                         if(d.length > 0){
@@ -55,15 +56,18 @@ class databaseManager{
                             var bool = false;
                             for(var i = 0; i < d.length; i++){
                                 if(d[i].hash == file_hash){
+                                    //Si le hash est présent dans la base, on la marque comme utilisé
                                     bool = true;
                                     t.con.query("UPDATE test SET used = FALSE WHERE 1;")
                                     t.con.query("UPDATE test SET used = TRUE WHERE hash = '"+file_hash+"';")
                                 }
                             }
                             if(!bool){
+                                //Si le hash n'est pas dans la base, on lance la fonction de sauvegarde pour cette configuration
                                 t.saveConfig(config_path, t);
                             }
                         }else{
+                            //Si aucune configuration n'est présente dans la base de donnée, on enregistre forcément cette configuration.
                             t.saveConfig(config_path, t);
                         }
                     })
@@ -103,7 +107,7 @@ class databaseManager{
                 hash.update(buffer);
                 let file_hash = hash.digest('hex');
                 that.con.query("UPDATE test SET used = FALSE WHERE 1;");
-                //Si le hash est différent on sauvegarde la nouvelle config
+                //On enregistre cette config dans la base, en indiquant bien qu'elle est utilisée.
                 var query = "INSERT INTO test SET ?",
                     values = {
                         id: 0,
@@ -122,18 +126,27 @@ class databaseManager{
     }
 
     updateList(list){
+        //Cette fonction met a jour la liste des capteurs enregistrés dans la base de données.
         var listeID = new Array();
         var listeAlias = new Array();
+
+        //Pour chaque élément dans la liste passé en paramètre
         list.forEach(element => {
+            //On découpe chaque élément et les places dans les deux listes distinctes.
            listeID.push(element.split(':')[0]); 
-           listeAlias.push(element.split(':')[1]); 
+           //La liste contenant les ids
+           listeAlias.push(element.split(':')[1]);
+           //La liste contenant les alias  
         });
+
         this.availableCapteurs = listeID;
         this.availableCapteursAlias = listeAlias
+        //On actualise nos listes.
         console.log(listeID); 
     }
 
     save(data, idCapteur, callback){
+        //Fonction qui permet d'enregistré une données dans la table(indiquée dans le fichier de configuration) avec les valeurs passées en paramètres.
         console.log(data+" :: "+idCapteur);
         var req = "INSERT INTO "+config.bdd.table_name+" VALUES(0, '"+data+"','"+idCapteur+"', '', '', CURRENT_TIMESTAMP);";
         this.con.query(req, function(err, result){
@@ -145,6 +158,8 @@ class databaseManager{
         });
     }
 
+    //Fonction qui permet de récupérer les données pour un capteurs dont l'id est 'idCapteur' et d'ont l'id dans données se situe
+    //Entre idD et idF
     recupSome(callback, idD, idF, idCapteur){
         var req = "SELECT id, data FROM "+config.bdd.table_name+" WHERE id_capteur = "+idCapteur+" AND id BETWEEN '"+idD+"' and '"+idF+"' ;";
         this.con.query(req, function(err, result){
@@ -156,14 +171,7 @@ class databaseManager{
         });
     }
 
-    recup(callback, id, idCapteur){
-        var req = "SELECT id, data FROM "+config.bdd.table_name+" WHERE id = "+id;
-        this.con.query(req, function(err, result){
-            if(err) throw err;
-            else callback(result[0].texte, id);
-        });
-    }
-
+    //Fonction qui permet de récupérer les 'number' dernières données du capteur passé en argument.
     recupLast(callback , idCapteur, number = 1){
         var req = "SELECT id, data FROM "+config.bdd.table_name+" WHERE id_capteur = "+idCapteur+" ORDER BY id DESC LIMIT "+number+";";
         this.con.query(req, function(err, result){
@@ -175,6 +183,7 @@ class databaseManager{
         });
     }
 
+    //Fonction générique qui permet d'exécuter une commande et qui renvoie le résultat dans la fonction de callback.
     justExec(callback, command){
         this.con.query(command, function(err, result){
             if(err){
@@ -186,16 +195,21 @@ class databaseManager{
     }
 
     constructor(){
+        //Constructeur du manager de base de données
+        //Ici on utilise les données dans le fichier de configuration pour ouvrir la connexion avec la base.
         this.con = mysql.createConnection({ host: config.bdd.sql_host, user: config.bdd.sql_user, password: config.bdd.sql_password })
+        //Ici on ce connecte et on renvois les éventuelles erreurs.
         this.con.connect(function(err){
             if(err){
                 throw err;
             }
         });
+        //On indique la base de données que l'ont va utiliser par la suite.
         this.con.query("USE "+config.bdd.bdd_name+";", function(err, res){if(err)throw err;});
+        //On initialise la liste des capteurs.
         this.availableCapteurs = [];
         that = this;
-        this.checkConfig('../config.json', that)
+        this.checkConfig('config.json', that)
     }
 
 

@@ -11,7 +11,7 @@
 		"IpCapteur": "194.57.109.86"
 	},
 	"serial": {
-		"serial_path": "/dev/ttyACM0",
+		"serial_path": "COM3",
 		"serial_baudrate": "9600"
 	},
 	"capteurs": [

@@ -4,21 +4,23 @@ if(process.argv.length < 3){
 }else{
     console.log("IP : "+process.argv[2]);
 }
-var ip = "138.68.79.177"
+
+
 var serialport = require("serialport");
+var config = require('config.json')('../config.json');
 var SerialPort = serialport.SerialPort;
 var moment = require('moment');
 const Manager = require('./ManagerPostReal.js');
+
 var Main = new Manager(String(process.argv[2]));
 
-var port = new serialport("COM3", {
-    baudRate: Number(9600),
+var port = new serialport(config.serial.serial_path, {
+    baudRate: Number(config.serial.serial_baudrate),
     autoOpen: false
 });
 
 port.on('open', function() {
     console.log("Port ouvert");
-    //setTimeout(function(){port.write('A1D\r\n');console.log('command sended');}, 1500);
 });
 
 port.open(function (err) {

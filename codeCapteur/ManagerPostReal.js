@@ -1,7 +1,7 @@
 var request = require('request');
 const { StringDecoder } = require('string_decoder');
 
-var config = require('config.json')('../configReal.json');
+var config = require('config.json')('./config.json');
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
@@ -96,17 +96,6 @@ class Manager{
             });
 
         }
-        /*var options = {
-            uri: 'https://'+config.server.server_host+'/api/006/last?raw_data='+this.getdata,
-            method: 'POST'
-        };
-        console.log("Try sending temp");
-        console.log(options.uri)
-        request(options, function(error, response, body) {
-            if(!error && response.statusCode == 200){
-                console.log("temp sended.");
-            }
-        });*/
     }
 }
 module.exports = Manager;
