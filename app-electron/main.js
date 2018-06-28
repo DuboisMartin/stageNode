@@ -7,7 +7,7 @@ const https = require('https');
 const querystring = require('querystring');
 const Config = require('electron-config');
 const config = new Config();
-
+const io = require( 'socket.io-client' )
 config.set('unicorn', '🦄');
 
 //process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
@@ -41,14 +41,16 @@ function createLogWindow() {
 	ipcMain.on('send', function(event, arg) {
 		console.log(arg);
 		config.set('host',arg.split(':')[2]);
-		const socket = require( 'socket.io-client' )( 'https://'+config.get('host')+':443', { rejectUnauthorized: false } );
+		var socket = io( 'https://'+config.get('host')+':443', { rejectUnauthorized: false } );
 		socket.open();
 		socket.emit('log', arg.split(':')[0]+':'+arg.split(':')[1]);
 		
 		socket.on('log-rep', function(rep){
-			console.log(rep);
+			console.log("REP : "+rep);
 			if(rep == 'OK'){
-				d();
+				logWindow.hide();
+				createMainWindow();
+				logWindow.close();
 			}
 		});
 		
@@ -56,12 +58,9 @@ function createLogWindow() {
 			console.log("New capteurs.")
 			mainWindow.webContents.executeJavaScript("new Notification('Nouveaux capteur !', {body: 'Un nouveaux capteurs a était détecter!'});var x = document.getElementById('idSelect'); var bool = false;for(var i = 0; i<x.options.length; i++){if(x.options[i].value == '"+data+"'){bool = true;}}if(!bool){var y = document.createElement('option');y.text = '"+data+"';y.selected='selected';x.add(y);}");
 		});
+
+		console.log("66");
 	});
-	function d() {
-		logWindow.hide();
-		createMainWindow();
-		logWindow.close();
-	}
 }
 
 

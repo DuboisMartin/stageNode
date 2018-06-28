@@ -443,6 +443,31 @@ myRouter.route('/api/util/config/:id/use')
     }
 })
 
+myRouter.route('/api/util/config/delete')
+.post(function(req, res) {
+    if(isAuth(req.ip)){
+        reqNumber++;
+        var old = require('../config.json')
+        for(var i = 0; i < old.capteurs.length; i++){
+            if(old.capteurs[i].id == req.query.raw_data){
+                console.log("Deleted at i = "+i+": "+old.capteurs[i].id)
+                old.capteurs.splice(i,1);
+            }
+        }
+
+        fs.writeFile('../config.json', JSON.stringify(old, null, '\t'), 'utf-8', function callback(err){
+            if (err) throw err;
+            config = require('config.json')('../config.json');
+            dbManager.updateConfig();
+            dbManager.updateList(makelist());
+            res.json({message: 'OK.'})
+        });
+    }else{
+        res.json({message: 'error',error: 'Adresse ip non autorisée'})
+    }
+
+});
+
 myRouter.route('/api/util/config/new')
 .post(function(req, res) {
     if(isAuth(req.ip)){
@@ -863,17 +888,18 @@ var listIpConnected = new Map()
 io.sockets.on('connection', function (socket) {
     console.log("Un client est connecté !");
     socket.on('log', function(msg) {
-        setTimeout(() => socket.disconnect(true), 5000);
-        console.log(msg);
+        console.log("LOG NEEDED");
         if(msg == "Martin:Dubois"){
             socket.emit('log-rep', "OK");
             listIpConnected.set(socket.id, socket.handshake.address.split(':')[3]);
+            console.log("ADDED : "+socket.handshake.address.split(':')[3]+" AT ID : "+socket.id);
         }else{ 
             socket.emit('log-rep', "NOP");
         }
     });
     socket.on('disconnect', function(){
         listIpConnected.delete(socket.id);
+        console.log("REMOVE : "+socket.id)
     });
 });
 
