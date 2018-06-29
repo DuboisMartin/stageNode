@@ -12,7 +12,7 @@ class databaseManager{
 
     //Fonction qui ce charge de rechargé la configuration.
     updateConfig(){
-        this.checkConfig('../config.json', that);
+        this.checkConfig('./config.json', that);
         config = require('config.json')('config.json');
     }
 
