@@ -7,7 +7,7 @@ if(process.argv.length < 3){
 
 
 var serialport = require("serialport");
-var config = require('config.json')('../config.json');
+var config = require('config.json')('./config.json');
 var SerialPort = serialport.SerialPort;
 var moment = require('moment');
 const Manager = require('./ManagerPostReal.js');
