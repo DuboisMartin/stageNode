@@ -134,7 +134,7 @@ myRouter.route('/api/:capt/last')
 .post(function(req,res){
     //Si le type de la requête est post, on sait que l'utilisateur souhaite stockée des données.
     console.log("Adresse ip : "+req.ip);
-    console.log("::ffff:"+config.serveur.IpCapteur);
+    console.log("::ffff:"+config.server.IpCapteur);
     if(req.ip != "::ffff:"+config.server.IpCapteur){
         //La sécurité actuellement utilisé consiste a vérifié si l'ip de la requête est l'ip autorisée dans la configuration.
         //Si elle ne correspond pas, on renvois une erreur.
